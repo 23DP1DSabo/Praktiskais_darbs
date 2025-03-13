@@ -18,10 +18,15 @@ public class Helper {
        return Files.newBufferedWriter(getFilePath(filename), option);
     }
 
-    private static Path getFilePath(String filename) throws FileNotFoundException {
-        Path filePath = Paths.get("data", filename);
+    private static Path getFilePath(String filename) throws IOException {
+        Path directory = Paths.get("data");
+        if (!Files.exists(directory)) {
+            Files.createDirectories(directory); // Create "data" folder if missing
+        }
+    
+        Path filePath = directory.resolve(filename);
         if (!Files.exists(filePath)) {
-            throw new FileNotFoundException("File not found: " + filename);
+            Files.createFile(filePath); // Create file if missing
         }
         return filePath;
     }
