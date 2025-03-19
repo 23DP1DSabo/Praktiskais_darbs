@@ -28,16 +28,20 @@ public class Main {
                     registerUser();
                     break;
                 case 2:
+                    login();
+                case 3:
                     createAccount();
                     break;
-                case 3:
+                case 4:
                     viewAccounts();
                     break;
-                case 4:
-                    System.out.println("Logging out...");
-                    break;
                 case 5:
+                    System.out.println("Logging out...");
+                    loggedInUser = null;
+                    break;
+                case 6:
                     saveUsers();
+                    loggedInUser = null;
                     System.out.println("Exiting...");
                     running = false;
                     break;
@@ -60,8 +64,10 @@ public class Main {
 
         User newUser = new User(username, userId);
         users.put(username, newUser);
+        loggedInUser = users.get(username);
         saveUsers();
         System.out.println("User registered successfully! ID: " + userId);
+        System.out.println("Welcome, " + username + "!");
     }
 
     private static void createAccount() {
@@ -121,6 +127,17 @@ public class Main {
         } catch (IOException e) {
             System.out.println("No existing user data found.");
         }
+    }
+
+    private static void login() {
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine();
+        if (!users.containsKey(username)) {
+            System.out.println("User not found!");
+            return;
+        }
+        loggedInUser = users.get(username);
+        System.out.println("Welcome, " + username + "!");
     }
 
     private static void saveUsers() {
