@@ -6,6 +6,7 @@ public class Main {
     private static final String USER_FILE = "users.csv";
     private static Scanner scanner = new Scanner(System.in);
     private static Map<String, User> users = new HashMap<>();
+    private static User loggedInUser = null;
 
     public static void main(String[] args) {
         loadUsers();
@@ -14,10 +15,11 @@ public class Main {
         while (running) {
             System.out.println("\nWelcome! Choose an option:");
             System.out.println("1. Register");
-            System.out.println("2. Create an account");
-            System.out.println("3. View accounts");
-            System.out.println("4. Log out");
-            System.out.println("5. Exit");
+            System.out.println("2. Login");
+            System.out.println("3. Create an account");
+            System.out.println("4. View accounts");
+            System.out.println("5. Log out");
+            System.out.println("6. Exit");
             System.out.print("Enter choice: ");
             
             int choice = scanner.nextInt();
@@ -71,11 +73,8 @@ public class Main {
     }
 
     private static void createAccount() {
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
-        
-        if (!users.containsKey(username)) {
-            System.out.println("User not found! Register first.");
+        if (loggedInUser == null) {
+            System.out.println("Please log in first.");
             return;
         }
         
@@ -89,8 +88,8 @@ public class Main {
             return;
         }
 
-        Account newAccount = new Account(accNumber, username, balance);
-        users.get(username).addAccount(newAccount);
+        Account newAccount = new Account(accNumber, loggedInUser.getUsername(), balance);
+        loggedInUser.addAccount(newAccount);
         saveUsers();
         System.out.println("Account created successfully!");
     }

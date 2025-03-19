@@ -20,6 +20,10 @@ public class User {
         return accounts;
     }
 
+    public String getUsername() {
+        return name;
+    }
+
     public String toCSV() {
         StringBuilder sb = new StringBuilder();
         sb.append(name).append(",").append(userID);
