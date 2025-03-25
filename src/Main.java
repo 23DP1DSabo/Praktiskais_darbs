@@ -1,6 +1,7 @@
 import java.io.*;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+import java.math.BigDecimal;
 
 public class Main {
     private static final String USER_FILE = "users.csv";
@@ -78,14 +79,22 @@ public class Main {
             return;
         }
         
-        System.out.print("Enter account number: ");
+        System.out.print("Enter user number: ");
         String accNumber = scanner.nextLine();
         System.out.print("Enter initial balance: ");
-        String balance = scanner.nextLine();
-
-        if (!balance.matches("\\d+\\.\\d{1,2}")) {
-            System.out.println("Invalid balance format. Must have at most two decimal places.");
-            return;
+        BigDecimal balance = null;
+        while (balance == null) {
+            System.out.print("Enter initial balance: ");
+            if (scanner.hasNextBigDecimal()) {
+                balance = scanner.nextBigDecimal();
+                if (balance.compareTo(BigDecimal.ZERO) < 0) {
+                    System.out.println("Balance cannot be negative.");
+                    balance = null;
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next(); // Consume invalid input
+            }
         }
 
         Account newAccount = new Account(accNumber, loggedInUser.getUsername(), balance);
@@ -117,7 +126,8 @@ public class Main {
                     
                     for (int i = 2; i < parts.length; i += 2) {
                         if (i + 1 < parts.length) {
-                            user.addAccount(new Account(parts[i], username, parts[i + 1]));
+                            BigDecimal balance = new BigDecimal(parts[i + 1]);
+                            user.addAccount(new Account(parts[i], username, balance));
                         }
                     }
                     users.put(username, user);
