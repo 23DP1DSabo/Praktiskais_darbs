@@ -21,51 +21,69 @@ public class Main {
 
         boolean running = true;
         while (running) {
-            System.out.println("\nWelcome! Choose an option:");
-            System.out.println("R - Register");
-            System.out.println("Li - Login");
-            System.out.println("C - Create an account");
-            System.out.println("V - View accounts");
-            System.out.println("Lo - Log out");
-            System.out.println("E - Exit");
+            if (loggedInUser == null) {
+                showGuestMenu();
+            } else {
+                showUserMenu();
+            }
+
             System.out.print("Enter choice: ");
-            
-            String choice = scanner.next();
-            scanner.nextLine();
+            String choice = scanner.nextLine().trim().toUpperCase();
 
-            if (choice.equalsIgnoreCase("R")) {
-                    registerUser();
-                    break;
-            }
-            if (choice.equalsIgnoreCase("Li")) {
-                    login();
-            }
-            if (choice.equalsIgnoreCase("C")) {
-                    createAccount();
-                    break;
-            }
-            if (choice.equalsIgnoreCase("View")) {
-                    viewAccounts();
-                    break;
-            }
-            if (choice.equalsIgnoreCase("Lo")) {
-                    System.out.println("Logging out...");
-                    loggedInUser = null;
-                    break;
-            }
-            if (choice.equalsIgnoreCase("E")) {
-                    saveUsers();
-                    loggedInUser = null;
-                    System.out.println("Exiting...");
-                    running = false;
-                    break;
-            }
-
-            else {
-                    System.out.println("Invalid option. Try again.");
+            if (loggedInUser == null) {
+                switch (choice) {
+                    case "R":
+                        registerUser();
+                        break;
+                    case "L":
+                        login();
+                        break;
+                    case "E":
+                        saveUsers();
+                        System.out.println("Exiting...");
+                        running = false;
+                        break;
+                    default:
+                        System.out.println("Invalid option. Try again.");
+                }
+            } else {
+                switch (choice) {
+                    case "C":
+                        createAccount();
+                        break;
+                    case "V":
+                        viewAccounts();
+                        break;
+                    case "L-OUT":
+                        System.out.println("Logging out...");
+                        loggedInUser = null;
+                        break;
+                    case "E":
+                        saveUsers();
+                        System.out.println("Exiting...");
+                        running = false;
+                        break;
+                    default:
+                        System.out.println("Invalid option. Try again.");
+                }
             }
         }
         scanner.close();
+    }
+
+    private static void showGuestMenu() {
+        System.out.println("\nWelcome! Choose an option:");
+        System.out.println("R - Register");
+        System.out.println("L - Login");
+        System.out.println("E - Exit");
+    }
+
+    private static void showUserMenu() {
+        System.out.println("\nWelcome, " + loggedInUser.getUsername() + "! Choose an option:");
+        System.out.println("C - Create an account");
+        System.out.println("V - View accounts");
+        System.out.println("L-OUT - Log out");
+        System.out.println("E - Exit");
     }
 
     private static void registerUser() {
