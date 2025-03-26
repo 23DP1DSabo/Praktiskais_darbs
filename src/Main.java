@@ -1,7 +1,7 @@
 import java.io.*;
+import java.math.BigDecimal;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
-import java.math.BigDecimal;
 
 public class Main {
     private static final String USER_FILE = "users.csv";
@@ -15,12 +15,12 @@ public class Main {
         boolean running = true;
         while (running) {
             System.out.println("\nWelcome! Choose an option:");
-            System.out.println("1. Register");
-            System.out.println("2. Login");
-            System.out.println("3. Create an account");
-            System.out.println("4. View accounts");
-            System.out.println("5. Log out");
-            System.out.println("6. Exit");
+            System.out.println("R - Register");
+            System.out.println("Li - Login");
+            System.out.println("C - Create an account");
+            System.out.println("V - View accounts");
+            System.out.println("Lo - Log out");
+            System.out.println("E - Exit");
             System.out.print("Enter choice: ");
             
             int choice = scanner.nextInt();
