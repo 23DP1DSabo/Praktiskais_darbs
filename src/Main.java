@@ -23,32 +23,38 @@ public class Main {
             System.out.println("6. Exit");
             System.out.print("Enter choice: ");
             
-            int choice = scanner.nextInt();
+            String choice = scanner.next();
             scanner.nextLine();
 
-            switch (choice) {
-                case 1:
+            if (choice.equalsIgnoreCase("R")) {
                     registerUser();
                     break;
-                case 2:
+            }
+            if (choice.equalsIgnoreCase("Li")) {
                     login();
-                case 3:
+            }
+            if (choice.equalsIgnoreCase("C")) {
                     createAccount();
                     break;
-                case 4:
+            }
+            if (choice.equalsIgnoreCase("View")) {
                     viewAccounts();
                     break;
-                case 5:
+            }
+            if (choice.equalsIgnoreCase("Lo")) {
                     System.out.println("Logging out...");
                     loggedInUser = null;
                     break;
-                case 6:
+            }
+            if (choice.equalsIgnoreCase("E")) {
                     saveUsers();
                     loggedInUser = null;
                     System.out.println("Exiting...");
                     running = false;
                     break;
-                default:
+            }
+
+            else {
                     System.out.println("Invalid option. Try again.");
             }
         }
