@@ -13,7 +13,6 @@ public class Main {
         loadUsers();
 
         boolean running = true;
-
         while (running) {
             if (loggedInUser == null) {
                 showGuestMenu();
