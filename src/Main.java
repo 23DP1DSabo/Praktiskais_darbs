@@ -12,6 +12,13 @@ public class Main {
     public static void main(String[] args) {
         loadUsers();
 
+        System.out.println("______   ___   _   _  _   __");
+        System.out.println("| ___ \\ / _ \\ | \\ | || | / /");
+        System.out.println("| |_/ // /_\\ \\|  \\| || |/ / ");
+        System.out.println("| ___ \\|  _  || . ` ||    \\ ");
+        System.out.println("| |_/ /| | | || |\\  || |\\  \\");
+        System.out.println("\\____/ \\_| |_/\\_| \\_/\\_| \\_/"); 
+
         boolean running = true;
         while (running) {
             System.out.println("\nWelcome! Choose an option:");
