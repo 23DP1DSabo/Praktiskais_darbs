@@ -29,22 +29,15 @@ public class User {
     }
 
     public String toCSV() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name).append(",").append(userID);
-        for (Account account : accounts) {
-            sb.append(",").append(account.getAccountNumber()).append(",").append(account.getBalance());
-        }
-        return sb.toString();
+        return name + "," + userID;
     }
 
     public void printAccounts() {
         if (accounts.isEmpty()) {
             System.out.println(name + " has no accounts.");
         } else {
-            System.out.println(name + "'s Accounts:");
             for (Account account : accounts) {
-                System.out.println("Account Number: " + account.getAccountNumber() +
-                                   ", Balance: $" + account.getBalance());
+                System.out.println("Account: " + account.getAccountName() + ", Balance: $" + account.getBalance());
             }
         }
     }

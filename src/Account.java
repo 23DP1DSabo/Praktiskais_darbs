@@ -1,24 +1,29 @@
 import java.math.BigDecimal;
 
 public class Account {
-    private String accountNumber;
+    private String accName;
     private BigDecimal balance;
-    private String fullName;
+    private String ownerId;
 
-    public Account(String accountNumber, String fullName, BigDecimal balance) {
-        this.accountNumber = accountNumber;
+    public Account(String accName, String ownerId, BigDecimal balance) {
+        this.accName = accName;
         this.balance = balance;
-        this.fullName = fullName;
+        this.ownerId = ownerId;
     }
 
-    public String getAccountNumber() {
-        return accountNumber;
+    public String getAccountName() {
+        return accName;
     }
 
-    public String getBalance() {
-        return String.valueOf(balance);
+    public BigDecimal getBalance() {
+        return balance;
     }
-    public String getAccountDetails(String accountNumber, String fullName, String balance) {
-        return "Account Number: " + accountNumber + "\nName:" + fullName + "\nBalance: " + balance;
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public String toCSV() {
+        return accName + "," + ownerId + "," + balance;
     }
 }

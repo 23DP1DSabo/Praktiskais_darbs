@@ -1,16 +1,17 @@
 import java.io.*;
-import java.nio.file.StandardOpenOption;
-import java.util.*;
 import java.math.BigDecimal;
+import java.util.*;
 
 public class Main {
     private static final String USER_FILE = "users.csv";
+    private static final String ACCOUNT_FILE = "accounts.csv";
     private static Scanner scanner = new Scanner(System.in);
     private static Map<String, User> users = new HashMap<>();
     private static User loggedInUser = null;
 
     public static void main(String[] args) {
         loadUsers();
+        loadAccounts();
 
         boolean running = true;
         while (running) {
@@ -33,6 +34,7 @@ public class Main {
                         break;
                     case "E":
                         saveUsers();
+                        saveAccounts();
                         System.out.println("Exiting...");
                         running = false;
                         break;
@@ -45,7 +47,7 @@ public class Main {
                         createAccount();
                         break;
                     case "V":
-                        viewAccounts();
+                        loggedInUser.printAccounts();
                         break;
                     case "L-OUT":
                         System.out.println("Logging out...");
@@ -53,6 +55,7 @@ public class Main {
                         break;
                     case "E":
                         saveUsers();
+                        saveAccounts();
                         System.out.println("Exiting...");
                         running = false;
                         break;
@@ -79,6 +82,44 @@ public class Main {
         System.out.println("E - Exit");
     }
 
+    private static void loadUsers() {
+        try (BufferedReader br = new BufferedReader(new FileReader(USER_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 2) { // Ensure correct format
+                    users.put(parts[0], new User(parts[0], parts[1]));
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("No existing user data found.");
+        }
+    }
+
+    private static void loadAccounts() {
+        try (BufferedReader br = new BufferedReader(new FileReader(ACCOUNT_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 3) {
+                    String accName = parts[0];
+                    String ownerId = parts[1];
+                    BigDecimal balance = new BigDecimal(parts[2]);
+
+                    Account account = new Account(accName, ownerId, balance);
+                    for (User user : users.values()) {
+                        if (user.getUserID().equals(ownerId)) {
+                            user.addAccount(account);
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("No existing account data found.");
+        }
+    }
+
     private static void registerUser() {
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
@@ -94,7 +135,6 @@ public class Main {
         loggedInUser = users.get(username);
         saveUsers();
         System.out.println("User registered successfully! ID: " + userId);
-        System.out.println("Welcome, " + username + "!");
     }
 
     private static void createAccount() {
@@ -102,83 +142,67 @@ public class Main {
             System.out.println("Please log in first.");
             return;
         }
-        
-        System.out.print("Enter account name: "); //this asks to enter the account name, but it is misapplied later. The account name should be unique between the logged in user's accounts (so not in the entire database). 
-        String accNumber = scanner.nextLine();
+
+        System.out.print("Enter account name: ");
+        String accName = scanner.nextLine();
         BigDecimal balance = null;
         while (balance == null) {
             System.out.print("Enter initial balance: ");
             if (scanner.hasNextBigDecimal()) {
                 balance = scanner.nextBigDecimal();
+                scanner.nextLine(); // Consume newline
                 if (balance.compareTo(BigDecimal.ZERO) < 0) {
                     System.out.println("Balance cannot be negative.");
                     balance = null;
                 }
             } else {
                 System.out.println("Invalid input. Please enter a valid number.");
-                scanner.next(); // Consume invalid input
+                scanner.next();
             }
         }
 
-        Account newAccount = new Account(accNumber, loggedInUser.getUsername(), balance);
+        Account newAccount = new Account(accName, loggedInUser.getUserID(), balance);
         loggedInUser.addAccount(newAccount);
-        saveUsers(); // here there should be a saveAccounts() method that writes in the accounts.csv file, but it is not implemented in this code
+        saveAccounts();
         System.out.println("Account created successfully!");
-    }
-    
-    private static void viewAccounts() {
-        String username = loggedInUser.getUsername();
-
-        if (!users.containsKey(username)) {
-            System.out.println("User not found!");
-            return;
-        }
-        users.get(username).printAccounts();
-    }
-
-    private static void loadUsers() { //this loads the accounts as well but like I mentioned befre there should be a accounts.csv and a method to load accounts from it
-        try (BufferedReader br = Helper.getReader(USER_FILE)) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 2) {
-                    String username = parts[0];
-                    String userId = parts[1];
-                    User user = new User(username, userId);
-                    
-                    for (int i = 2; i < parts.length; i += 2) {
-                        if (i + 1 < parts.length) {
-                            BigDecimal balance = new BigDecimal(parts[i + 1]);
-                            user.addAccount(new Account(parts[i], username, balance));
-                        }
-                    }
-                    users.put(username, user);
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("No existing user data found.");
-        }
     }
 
     private static void login() {
-        System.out.print("Enter username: ");//to login there should also be a request to enter the user ID which matches with the username
+        System.out.print("Enter username: ");
         String username = scanner.nextLine();
-        if (!users.containsKey(username)) {
-            System.out.println("User not found!");
+        System.out.print("Enter user ID: ");
+        String userId = scanner.nextLine();
+
+        if (!users.containsKey(username) || !users.get(username).getUserID().equals(userId)) {
+            System.out.println("Invalid username or user ID.");
             return;
         }
+
         loggedInUser = users.get(username);
         System.out.println("Welcome, " + username + "!");
     }
 
-    private static void saveUsers() { //this saves accounts as well but it has to be changed so that there is a seperate function to save accounts seperately with the user IDs linking them to the users
-        try (BufferedWriter bw = Helper.getWriter(USER_FILE, StandardOpenOption.CREATE)) {
+    private static void saveUsers() {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(USER_FILE))) {
             for (User user : users.values()) {
                 bw.write(user.toCSV());
                 bw.newLine();
             }
         } catch (IOException e) {
             System.out.println("Error saving user data: " + e.getMessage());
+        }
+    }
+
+    private static void saveAccounts() {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(ACCOUNT_FILE))) {
+            for (User user : users.values()) {
+                for (Account account : user.getAccounts()) {
+                    bw.write(account.toCSV());
+                    bw.newLine();
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error saving account data: " + e.getMessage());
         }
     }
 }
