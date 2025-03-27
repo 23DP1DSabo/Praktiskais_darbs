@@ -20,6 +20,10 @@ public class User {
         return accounts;
     }
 
+    public String getUserID() {
+        return userID;
+    }
+
     public String getUsername() {
         return name;
     }

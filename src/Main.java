@@ -65,14 +65,14 @@ public class Main {
     }
 
     private static void showGuestMenu() {
-        System.out.println("\nWelcome! Choose an option:");
+        System.out.println("Welcome! Choose an option:");
         System.out.println("R - Register");
         System.out.println("L - Login");
         System.out.println("E - Exit");
     }
 
     private static void showUserMenu() {
-        System.out.println("\nWelcome, " + loggedInUser.getUsername() + "! Choose an option:");
+        System.out.println("Welcome, " + loggedInUser.getUsername() + "! Choose an option:");
         System.out.println("C - Create an account");
         System.out.println("V - View accounts");
         System.out.println("L-OUT - Log out");
@@ -103,9 +103,8 @@ public class Main {
             return;
         }
         
-        System.out.print("Enter user number: ");
+        System.out.print("Enter account name: "); //this asks to enter the account name, but it is misapplied later. The account name should be unique between the logged in user's accounts (so not in the entire database). 
         String accNumber = scanner.nextLine();
-        System.out.print("Enter initial balance: ");
         BigDecimal balance = null;
         while (balance == null) {
             System.out.print("Enter initial balance: ");
@@ -123,13 +122,12 @@ public class Main {
 
         Account newAccount = new Account(accNumber, loggedInUser.getUsername(), balance);
         loggedInUser.addAccount(newAccount);
-        saveUsers();
+        saveUsers(); // here there should be a saveAccounts() method that writes in the accounts.csv file, but it is not implemented in this code
         System.out.println("Account created successfully!");
     }
-
+    
     private static void viewAccounts() {
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine();
+        String username = loggedInUser.getUsername();
 
         if (!users.containsKey(username)) {
             System.out.println("User not found!");
@@ -138,7 +136,7 @@ public class Main {
         users.get(username).printAccounts();
     }
 
-    private static void loadUsers() {
+    private static void loadUsers() { //this loads the accounts as well but like I mentioned befre there should be a accounts.csv and a method to load accounts from it
         try (BufferedReader br = Helper.getReader(USER_FILE)) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -163,7 +161,7 @@ public class Main {
     }
 
     private static void login() {
-        System.out.print("Enter username: ");
+        System.out.print("Enter username: ");//to login there should also be a request to enter the user ID which matches with the username
         String username = scanner.nextLine();
         if (!users.containsKey(username)) {
             System.out.println("User not found!");
@@ -173,7 +171,7 @@ public class Main {
         System.out.println("Welcome, " + username + "!");
     }
 
-    private static void saveUsers() {
+    private static void saveUsers() { //this saves accounts as well but it has to be changed so that there is a seperate function to save accounts seperately with the user IDs linking them to the users
         try (BufferedWriter bw = Helper.getWriter(USER_FILE, StandardOpenOption.CREATE)) {
             for (User user : users.values()) {
                 bw.write(user.toCSV());
