@@ -1,7 +1,7 @@
 import java.io.*;
+import java.math.BigDecimal;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
-import java.math.BigDecimal;
 
 public class Main {
     private static final String USER_FILE = "users.csv";
@@ -37,6 +37,7 @@ public class Main {
                         running = false;
                         break;
                     default:
+                        System.out.println("");
                         System.out.println("Invalid option. Try again.");
                 }
             } else {
@@ -48,15 +49,18 @@ public class Main {
                         viewAccounts();
                         break;
                     case "L-OUT":
+                        System.out.println("");
                         System.out.println("Logging out...");
                         loggedInUser = null;
                         break;
                     case "E":
                         saveUsers();
+                        System.out.println("");
                         System.out.println("Exiting...");
                         running = false;
                         break;
                     default:
+                        System.out.println("");
                         System.out.println("Invalid option. Try again.");
                 }
             }
@@ -65,14 +69,19 @@ public class Main {
     }
 
     private static void showGuestMenu() {
-        System.out.println("\nWelcome! Choose an option:");
+        System.out.println("\033[H\033[2J");
+        System.out.flush();
+        System.out.println("Welcome! Choose an option:");
         System.out.println("R - Register");
         System.out.println("L - Login");
         System.out.println("E - Exit");
     }
 
     private static void showUserMenu() {
-        System.out.println("\nWelcome, " + loggedInUser.getUsername() + "! Choose an option:");
+        System.out.println("\033[H\033[2J");
+        System.out.flush();
+        System.out.println("User ID: " + loggedInUser.getID());
+        System.out.println("Welcome, " + loggedInUser.getUsername() + "! Choose an option:");
         System.out.println("C - Create an account");
         System.out.println("V - View accounts");
         System.out.println("L-OUT - Log out");
@@ -80,11 +89,14 @@ public class Main {
     }
 
     private static void registerUser() {
+        System.out.println("\033[H\033[2J");
+        System.out.flush();
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
         String userId = UUID.randomUUID().toString().substring(0, 8);
 
         if (users.containsKey(username)) {
+            System.out.println("");
             System.out.println("Username already exists!");
             return;
         }
@@ -93,29 +105,36 @@ public class Main {
         users.put(username, newUser);
         loggedInUser = users.get(username);
         saveUsers();
-        System.out.println("User registered successfully! ID: " + userId);
-        System.out.println("Welcome, " + username + "!");
+        System.out.println("\033[H\033[2J");
+        System.out.flush();
+        System.out.println("User registered successfully!");
     }
 
     private static void createAccount() {
         if (loggedInUser == null) {
+            System.out.println("");
             System.out.println("Please log in first.");
             return;
         }
-        
-        System.out.print("Enter user number: ");
+        System.out.println("\033H\033[2J");
+        System.out.flush();
+        System.out.println("User ID: " + loggedInUser.getID());
+        System.out.print("Enter your user ID: ");
         String accNumber = scanner.nextLine();
-        System.out.print("Enter initial balance: ");
         BigDecimal balance = null;
         while (balance == null) {
+            System.out.println("");
             System.out.print("Enter initial balance: ");
             if (scanner.hasNextBigDecimal()) {
                 balance = scanner.nextBigDecimal();
                 if (balance.compareTo(BigDecimal.ZERO) < 0) {
+                    System.out.println("\033[H\033[2J");
+                    System.out.flush();
                     System.out.println("Balance cannot be negative.");
                     balance = null;
                 }
             } else {
+                System.out.println("");
                 System.out.println("Invalid input. Please enter a valid number.");
                 scanner.next(); // Consume invalid input
             }
@@ -124,6 +143,7 @@ public class Main {
         Account newAccount = new Account(accNumber, loggedInUser.getUsername(), balance);
         loggedInUser.addAccount(newAccount);
         saveUsers();
+        System.out.println("");
         System.out.println("Account created successfully!");
     }
 
@@ -132,6 +152,7 @@ public class Main {
         String username = scanner.nextLine();
 
         if (!users.containsKey(username)) {
+            System.out.println("");
             System.out.println("User not found!");
             return;
         }
@@ -158,6 +179,7 @@ public class Main {
                 }
             }
         } catch (IOException e) {
+            System.out.println("");
             System.out.println("No existing user data found.");
         }
     }
@@ -166,11 +188,12 @@ public class Main {
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
         if (!users.containsKey(username)) {
+            System.out.println("");
             System.out.println("User not found!");
             return;
         }
         loggedInUser = users.get(username);
-        System.out.println("Welcome, " + username + "!");
+        System.out.println("");
     }
 
     private static void saveUsers() {
@@ -180,6 +203,7 @@ public class Main {
                 bw.newLine();
             }
         } catch (IOException e) {
+            System.out.println("");
             System.out.println("Error saving user data: " + e.getMessage());
         }
     }

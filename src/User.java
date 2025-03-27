@@ -24,6 +24,10 @@ public class User {
         return name;
     }
 
+    public String getID() {
+        return userID;
+    }
+
     public String toCSV() {
         StringBuilder sb = new StringBuilder();
         sb.append(name).append(",").append(userID);
@@ -35,12 +39,16 @@ public class User {
 
     public void printAccounts() {
         if (accounts.isEmpty()) {
+            System.out.println("\033[H\033[2J");
+            System.out.flush();
             System.out.println(name + " has no accounts.");
+            System.out.println("");
         } else {
             System.out.println(name + "'s Accounts:");
             for (Account account : accounts) {
                 System.out.println("Account Number: " + account.getAccountNumber() +
                                    ", Balance: $" + account.getBalance());
+                System.out.println("");
             }
         }
     }
