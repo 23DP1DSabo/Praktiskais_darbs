@@ -88,6 +88,18 @@ public class Main {
         System.out.println("E - Exit");
     }
 
+    public static void proceed() {
+        System.out.print("Proceed? (y/n): ");
+        String choice = scanner.nextLine().trim().toUpperCase();
+        while (!choice.equals("Y")) {
+            System.out.println("\033[H\033[2J");
+            System.out.flush();
+            System.out.println("Proceed? (y/n): ");
+            choice = scanner.nextLine().trim().toUpperCase();
+        }
+        showUserMenu();
+    }
+
     private static void registerUser() {
         System.out.println("\033[H\033[2J");
         System.out.flush();
@@ -108,6 +120,7 @@ public class Main {
         System.out.println("\033[H\033[2J");
         System.out.flush();
         System.out.println("User registered successfully!");
+        showUserMenu();
     }
 
     private static void createAccount() {
@@ -145,6 +158,7 @@ public class Main {
         saveUsers();
         System.out.println("");
         System.out.println("Account created successfully!");
+        proceed();
     }
 
     private static void viewAccounts() {
@@ -157,6 +171,7 @@ public class Main {
             return;
         }
         users.get(username).printAccounts();
+        proceed();
     }
 
     private static void loadUsers() {
@@ -182,9 +197,12 @@ public class Main {
             System.out.println("");
             System.out.println("No existing user data found.");
         }
+        proceed();
     }
 
     private static void login() {
+        System.out.println("\033H\033[2J");
+        System.out.flush();
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
         if (!users.containsKey(username)) {

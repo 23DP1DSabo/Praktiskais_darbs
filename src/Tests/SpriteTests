@@ -1,0 +1,17 @@
+public class SpriteTests {
+
+    @Test
+    public void testISICCard() {
+        CardSprites.ISICCard();
+    }
+
+    @Test
+    public void testCreditCard() {
+        CardSprites.CreditCard();
+    }
+
+    @Test
+    public void testDebitCard() {
+        CardSprites.DebitCard();   
+    }
+}
