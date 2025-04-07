@@ -5,13 +5,16 @@ import java.util.*;
 public class Main {
     private static final String USER_FILE = "users.csv";
     private static final String ACCOUNT_FILE = "accounts.csv";
+    private static final String TRANSFER_FILE = "transfers.csv";
     private static Scanner scanner = new Scanner(System.in);
     private static Map<String, User> users = new HashMap<>();
     private static User loggedInUser = null;
+    private static List<Transfer> transfers = new ArrayList<>();
 
     public static void main(String[] args) {
         loadUsers();
         loadAccounts();
+        loadTransfers();
 
         boolean running = true;
         while (running) {
@@ -35,6 +38,7 @@ public class Main {
                     case "E":
                         saveUsers();
                         saveAccounts();
+                        saveTransfers();
                         System.out.println("Exiting...");
                         running = false;
                         break;
@@ -49,6 +53,12 @@ public class Main {
                     case "V":
                         loggedInUser.printAccounts();
                         break;
+                    case "T":
+                        performTransfer();
+                        break;
+                    case "H":
+                        showTransferHistory();
+                        break;
                     case "L-OUT":
                         System.out.println("Logging out...");
                         loggedInUser = null;
@@ -56,6 +66,7 @@ public class Main {
                     case "E":
                         saveUsers();
                         saveAccounts();
+                        saveTransfers();
                         System.out.println("Exiting...");
                         running = false;
                         break;
@@ -78,6 +89,8 @@ public class Main {
         System.out.println("Welcome, " + loggedInUser.getUsername() + "! Choose an option:");
         System.out.println("C - Create an account");
         System.out.println("V - View accounts");
+        System.out.println("T - Transfer money");
+        System.out.println("H - View transfer history");
         System.out.println("L-OUT - Log out");
         System.out.println("E - Exit");
     }
@@ -203,6 +216,131 @@ public class Main {
             }
         } catch (IOException e) {
             System.out.println("Error saving account data: " + e.getMessage());
+        }
+    }
+
+    private static void loadTransfers() {
+        try (BufferedReader br = new BufferedReader(new FileReader(TRANSFER_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                transfers.add(Transfer.fromCSV(line));
+            }
+        } catch (IOException e) {
+            System.out.println("No existing transfer data found.");
+        }
+    }
+
+    private static void saveTransfers() {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(TRANSFER_FILE))) {
+            for (Transfer transfer : transfers) {
+                bw.write(transfer.toCSV());
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error saving transfer data: " + e.getMessage());
+        }
+    }
+
+    private static void performTransfer() {
+        if (loggedInUser.getAccounts().isEmpty()) {
+            System.out.println("You need to have at least one account to make transfers.");
+            return;
+        }
+
+        System.out.println("\nYour accounts:");
+        loggedInUser.printAccounts();
+        
+        System.out.print("\nEnter source account name: ");
+        String sourceAccName = scanner.nextLine();
+        
+        Account sourceAccount = null;
+        for (Account acc : loggedInUser.getAccounts()) {
+            if (acc.getAccountName().equals(sourceAccName)) {
+                sourceAccount = acc;
+                break;
+            }
+        }
+        
+        if (sourceAccount == null) {
+            System.out.println("Account not found!");
+            return;
+        }
+
+        System.out.print("Enter target account name: ");
+        String targetAccName = scanner.nextLine();
+        
+        Account targetAccount = null;
+        for (User user : users.values()) {
+            for (Account acc : user.getAccounts()) {
+                if (acc.getAccountName().equals(targetAccName)) {
+                    targetAccount = acc;
+                    break;
+                }
+            }
+            if (targetAccount != null) break;
+        }
+        
+        if (targetAccount == null) {
+            System.out.println("Target account not found!");
+            return;
+        }
+
+        if (sourceAccount == targetAccount) {
+            System.out.println("Cannot transfer to the same account!");
+            return;
+        }
+
+        BigDecimal amount = null;
+        while (amount == null) {
+            System.out.print("Enter amount to transfer: ");
+            if (scanner.hasNextBigDecimal()) {
+                amount = scanner.nextBigDecimal();
+                scanner.nextLine(); // Consume newline
+                if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+                    System.out.println("Amount must be positive.");
+                    amount = null;
+                } else if (amount.compareTo(sourceAccount.getBalance()) > 0) {
+                    System.out.println("Insufficient funds.");
+                    amount = null;
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next();
+            }
+        }
+
+        // Perform the transfer
+        sourceAccount.setBalance(sourceAccount.getBalance().subtract(amount));
+        targetAccount.setBalance(targetAccount.getBalance().add(amount));
+
+        // Create and save transfer record
+        Transfer transfer = new Transfer(sourceAccName, targetAccName, amount);
+        transfer.setStatus("COMPLETED");
+        transfers.add(transfer);
+        
+        saveAccounts();
+        saveTransfers();
+        
+        System.out.println("Transfer completed successfully!");
+    }
+
+    private static void showTransferHistory() {
+        System.out.println("\nTransfer History:");
+        boolean found = false;
+        for (Transfer transfer : transfers) {
+            if (transfer.getSourceAccountName().equals(loggedInUser.getAccounts().get(0).getAccountName()) ||
+                transfer.getTargetAccountName().equals(loggedInUser.getAccounts().get(0).getAccountName())) {
+                System.out.printf("From: %s, To: %s, Amount: $%s, Date: %s, Status: %s%n",
+                    transfer.getSourceAccountName(),
+                    transfer.getTargetAccountName(),
+                    transfer.getAmount(),
+                    transfer.getTimestamp(),
+                    transfer.getStatus());
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("No transfer history found.");
         }
     }
 }
