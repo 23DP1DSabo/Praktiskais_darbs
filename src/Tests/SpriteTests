@@ -1,3 +1,9 @@
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
+
+import PraktiskaisDarbs.src.main.CardSprites;
+
 public class SpriteTests {
 
     @Test
