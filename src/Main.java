@@ -56,6 +56,18 @@ public class Main {
                     case "T":
                         performTransfer();
                         break;
+                    case "CC":
+                    String choice2 = scanner.nextLine().trim().toUpperCase();
+                    switch (choice2) {
+                        case "Create debit card":
+                            createDebit();
+                            break;
+                        case "Create credit card":
+                            createCredit();
+                            break;
+                        case "Back to main menu":
+                            break;
+                    }
                     case "H":
                         showTransferHistory();
                         break;
@@ -131,6 +143,14 @@ public class Main {
         } catch (IOException e) {
             System.out.println("No existing account data found.");
         }
+    }
+
+    private static void createCredit() {
+        return;
+    }
+
+    private static void createDebit() {
+        return;
     }
 
     private static void registerUser() {
