@@ -57,17 +57,17 @@ public class Main {
                         performTransfer();
                         break;
                     case "CC":
-                    String choice2 = scanner.nextLine().trim().toUpperCase();
-                    switch (choice2) {
-                        case "Create debit card":
-                            createDebit();
-                            break;
-                        case "Create credit card":
-                            createCredit();
-                            break;
-                        case "Back to main menu":
-                            break;
-                    }
+                    // String choice2 = scanner.nextLine().trim().toUpperCase();
+                    // switch (choice2) {
+                    //     case "Create debit card":
+                    //         createDebit();
+                    //         break;
+                    //     case "Create credit card":
+                    //         createCredit();
+                    //         break;
+                    //     case "Back to main menu":
+                    //         break;
+                    // }
                     case "H":
                         showTransferHistory();
                         break;
@@ -100,6 +100,7 @@ public class Main {
     private static void showUserMenu() {
         System.out.println("Welcome, " + loggedInUser.getUsername() + "! Choose an option:");
         System.out.println("C - Create an account");
+        System.out.println("CC - Create a card");
         System.out.println("V - View accounts");
         System.out.println("T - Transfer money");
         System.out.println("H - View transfer history");
@@ -145,13 +146,13 @@ public class Main {
         }
     }
 
-    private static void createCredit() {
-        return;
-    }
+    // private static void createCredit() {
+    //     return;
+    // }
 
-    private static void createDebit() {
-        return;
-    }
+    // private static void createDebit() {
+    //     return;
+    // }
 
     private static void registerUser() {
         System.out.print("Enter username: ");
