@@ -3,9 +3,9 @@ import java.math.BigDecimal;
 import java.util.*;
 
 public class Main {
-    private static final String USER_FILE = "users.csv";
-    private static final String ACCOUNT_FILE = "accounts.csv";
-    private static final String TRANSFER_FILE = "transfers.csv";
+    private static final String USER_FILE = "data/users.csv";
+    private static final String ACCOUNT_FILE = "data/accounts.csv";
+    private static final String TRANSFER_FILE = "data/transfers.csv";
     private static Scanner scanner = new Scanner(System.in);
     private static Map<String, User> users = new HashMap<>();
     private static User loggedInUser = null;
@@ -104,6 +104,17 @@ public class Main {
         System.out.println("1 - Create Debit Card");
         System.out.println("2 - Create Credit Card");
         System.out.println("3 - Back to Main Menu");
+        String card_choice = scanner.nextLine().trim().toUpperCase();
+        switch (card_choice) {
+            case "1":
+                createDebit();
+                break;
+            case "2":
+                createCredit();
+                break;
+            case "3":
+                break;
+        }
     }
 
     private static void loadUsers() {
@@ -273,7 +284,8 @@ public class Main {
         }
 
         String cardNumber = generateCardNumber();
-        DebitCard newCard = new DebitCard(cardNumber, selectedAccount, pin);
+        BigDecimal defaultDailyLimit = new BigDecimal("1000"); // Default daily limit of 1000
+        DebitCard newCard = new DebitCard(cardNumber, selectedAccount, pin, defaultDailyLimit);
         loggedInUser.addCard(newCard);
         saveCards();
         System.out.println("Debit card created successfully!");
@@ -293,7 +305,7 @@ public class Main {
     }
 
     private static void saveCards() {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("cards.csv"))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("data/cards.csv"))) {
             for (User user : users.values()) {
                 for (Card card : user.getCards()) {
                     bw.write(card.toCSV());
@@ -306,7 +318,7 @@ public class Main {
     }
 
     private static void loadCards() {
-        try (BufferedReader br = new BufferedReader(new FileReader("cards.csv"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("data/cards.csv"))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
@@ -332,7 +344,8 @@ public class Main {
                     if (linkedAccount != null) {
                         Card card;
                         if (cardType.equals("DEBIT")) {
-                            card = new DebitCard(cardNumber, linkedAccount, pin);
+                            BigDecimal dailyLimit = new BigDecimal(parts[5]);
+                            card = new DebitCard(cardNumber, linkedAccount, pin, dailyLimit);
                         } else {
                             BigDecimal dailyLimit = new BigDecimal(parts[5]);
                             BigDecimal creditLimit = new BigDecimal(parts[6]);
@@ -523,8 +536,12 @@ public class Main {
                     System.out.println("Amount must be positive.");
                     amount = null;
                 } else if (amount.compareTo(sourceAccount.getBalance()) > 0) {
-                    System.out.println("Insufficient funds.");
-                    amount = null;
+                    System.out.println("Insufficient funds. Transfer marked as incomplete.");
+                    Transfer transfer = new Transfer(sourceAccName, targetAccName, amount);
+                    transfer.setStatus("INCOMPLETE");
+                    transfers.add(transfer);
+                    saveTransfers();
+                    return;
                 }
             } else {
                 System.out.println("Invalid input. Please enter a valid number.");
