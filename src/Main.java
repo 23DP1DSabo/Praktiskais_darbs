@@ -57,17 +57,8 @@ public class Main {
                         performTransfer();
                         break;
                     case "CC":
-                    // String choice2 = scanner.nextLine().trim().toUpperCase();
-                    // switch (choice2) {
-                    //     case "Create debit card":
-                    //         createDebit();
-                    //         break;
-                    //     case "Create credit card":
-                    //         createCredit();
-                    //         break;
-                    //     case "Back to main menu":
-                    //         break;
-                    // }
+                        showCardMenu();
+                        break;
                     case "H":
                         showTransferHistory();
                         break;
@@ -100,12 +91,19 @@ public class Main {
     private static void showUserMenu() {
         System.out.println("Welcome, " + loggedInUser.getUsername() + "! Choose an option:");
         System.out.println("C - Create an account");
-        System.out.println("CC - Create a card");
         System.out.println("V - View accounts");
         System.out.println("T - Transfer money");
+        System.out.println("CC - Card Management");
         System.out.println("H - View transfer history");
         System.out.println("L-OUT - Log out");
         System.out.println("E - Exit");
+    }
+
+    private static void showCardMenu() {
+        System.out.println("Card Management Menu:");
+        System.out.println("1 - Create Debit Card");
+        System.out.println("2 - Create Credit Card");
+        System.out.println("3 - Back to Main Menu");
     }
 
     private static void loadUsers() {
@@ -146,13 +144,217 @@ public class Main {
         }
     }
 
-    // private static void createCredit() {
-    //     return;
-    // }
+    private static void createCredit() {
+        if (loggedInUser == null) {
+            System.out.println("Please log in first.");
+            return;
+        }
 
-    // private static void createDebit() {
-    //     return;
-    // }
+        if (loggedInUser.getAccounts().isEmpty()) {
+            System.out.println("You need to have at least one account to create a credit card.");
+            return;
+        }
+
+        System.out.println("Your accounts:");
+        loggedInUser.printAccounts();
+        System.out.print("Enter account name to link the card to: ");
+        String accName = scanner.nextLine();
+
+        Account selectedAccount = null;
+        for (Account acc : loggedInUser.getAccounts()) {
+            if (acc.getAccountName().equals(accName)) {
+                selectedAccount = acc;
+                break;
+            }
+        }
+
+        if (selectedAccount == null) {
+            System.out.println("Account not found.");
+            return;
+        }
+
+        System.out.print("Enter PIN (4 digits): ");
+        String pin = scanner.nextLine();
+        while (!pin.matches("\\d{4}")) {
+            System.out.println("PIN must be 4 digits. Try again: ");
+            pin = scanner.nextLine();
+        }
+
+        BigDecimal dailyLimit = null;
+        while (dailyLimit == null) {
+            System.out.print("Enter daily spending limit: ");
+            if (scanner.hasNextBigDecimal()) {
+                dailyLimit = scanner.nextBigDecimal();
+                scanner.nextLine(); // Consume newline
+                if (dailyLimit.compareTo(BigDecimal.ZERO) <= 0) {
+                    System.out.println("Daily limit must be positive.");
+                    dailyLimit = null;
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next();
+            }
+        }
+
+        BigDecimal creditLimit = null;
+        while (creditLimit == null) {
+            System.out.print("Enter credit limit: ");
+            if (scanner.hasNextBigDecimal()) {
+                creditLimit = scanner.nextBigDecimal();
+                scanner.nextLine(); // Consume newline
+                if (creditLimit.compareTo(BigDecimal.ZERO) <= 0) {
+                    System.out.println("Credit limit must be positive.");
+                    creditLimit = null;
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next();
+            }
+        }
+
+        BigDecimal interestRate = null;
+        while (interestRate == null) {
+            System.out.print("Enter annual interest rate (e.g., 0.15 for 15%): ");
+            if (scanner.hasNextBigDecimal()) {
+                interestRate = scanner.nextBigDecimal();
+                scanner.nextLine(); // Consume newline
+                if (interestRate.compareTo(BigDecimal.ZERO) <= 0) {
+                    System.out.println("Interest rate must be positive.");
+                    interestRate = null;
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next();
+            }
+        }
+
+        String cardNumber = generateCardNumber();
+        CreditCard newCard = new CreditCard(cardNumber, selectedAccount, pin, dailyLimit, creditLimit, interestRate);
+        loggedInUser.addCard(newCard);
+        saveCards();
+        System.out.println("Credit card created successfully!");
+        System.out.println("Card Number: " + cardNumber);
+    }
+
+    private static void createDebit() {
+        if (loggedInUser == null) {
+            System.out.println("Please log in first.");
+            return;
+        }
+
+        if (loggedInUser.getAccounts().isEmpty()) {
+            System.out.println("You need to have at least one account to create a debit card.");
+            return;
+        }
+
+        System.out.println("Your accounts:");
+        loggedInUser.printAccounts();
+        System.out.print("Enter account name to link the card to: ");
+        String accName = scanner.nextLine();
+
+        Account selectedAccount = null;
+        for (Account acc : loggedInUser.getAccounts()) {
+            if (acc.getAccountName().equals(accName)) {
+                selectedAccount = acc;
+                break;
+            }
+        }
+
+        if (selectedAccount == null) {
+            System.out.println("Account not found.");
+            return;
+        }
+
+        System.out.print("Enter PIN (4 digits): ");
+        String pin = scanner.nextLine();
+        while (!pin.matches("\\d{4}")) {
+            System.out.println("PIN must be 4 digits. Try again: ");
+            pin = scanner.nextLine();
+        }
+
+        String cardNumber = generateCardNumber();
+        DebitCard newCard = new DebitCard(cardNumber, selectedAccount, pin);
+        loggedInUser.addCard(newCard);
+        saveCards();
+        System.out.println("Debit card created successfully!");
+        System.out.println("Card Number: " + cardNumber);
+    }
+
+    private static String generateCardNumber() {
+        Random random = new Random();
+        StringBuilder cardNumber = new StringBuilder();
+        for (int i = 0; i < 16; i++) {
+            cardNumber.append(random.nextInt(10));
+            if ((i + 1) % 4 == 0 && i != 15) {
+                cardNumber.append(" ");
+            }
+        }
+        return cardNumber.toString();
+    }
+
+    private static void saveCards() {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("cards.csv"))) {
+            for (User user : users.values()) {
+                for (Card card : user.getCards()) {
+                    bw.write(card.toCSV());
+                    bw.newLine();
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error saving card data: " + e.getMessage());
+        }
+    }
+
+    private static void loadCards() {
+        try (BufferedReader br = new BufferedReader(new FileReader("cards.csv"))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 5) {
+                    String cardNumber = parts[0];
+                    String accountName = parts[1];
+                    String cardType = parts[2];
+                    boolean isActive = Boolean.parseBoolean(parts[3]);
+                    String pin = parts[4];
+
+                    // Find the account
+                    Account linkedAccount = null;
+                    for (User user : users.values()) {
+                        for (Account acc : user.getAccounts()) {
+                            if (acc.getAccountName().equals(accountName)) {
+                                linkedAccount = acc;
+                                break;
+                            }
+                        }
+                        if (linkedAccount != null) break;
+                    }
+
+                    if (linkedAccount != null) {
+                        Card card;
+                        if (cardType.equals("DEBIT")) {
+                            card = new DebitCard(cardNumber, linkedAccount, pin);
+                        } else {
+                            BigDecimal dailyLimit = new BigDecimal(parts[5]);
+                            BigDecimal creditLimit = new BigDecimal(parts[6]);
+                            BigDecimal interestRate = new BigDecimal(parts[7]);
+                            card = new CreditCard(cardNumber, linkedAccount, pin, dailyLimit, creditLimit, interestRate);
+                        }
+                        card.setActive(isActive);
+                        
+                        // Find the user who owns the account
+                        for (User user : users.values()) {
+                            if (user.getAccounts().contains(linkedAccount)) {
+                                user.addCard(card);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("No existing card data found.");
+        }
+    }
 
     private static void registerUser() {
         System.out.print("Enter username: ");

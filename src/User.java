@@ -5,19 +5,29 @@ public class User {
     private String name;
     private String userID;
     private List<Account> accounts;
+    private List<Card> cards;
 
     public User(String name, String userID) {
         this.name = name;
         this.userID = userID;
         this.accounts = new ArrayList<>();
+        this.cards = new ArrayList<>();
     }
 
     public void addAccount(Account account) {
         accounts.add(account);
     }
 
+    public void addCard(Card card) {
+        cards.add(card);
+    }
+
     public List<Account> getAccounts() {
         return accounts;
+    }
+
+    public List<Card> getCards() {
+        return cards;
     }
 
     public String getUserID() {
@@ -37,7 +47,9 @@ public class User {
             System.out.println(name + " has no accounts.");
         } else {
             for (Account account : accounts) {
-                System.out.println("Account: " + account.getAccountName() + ", Balance: $" + account.getBalance());
+                System.out.printf("Account: %s, Balance: €%.2f%n", 
+                    account.getAccountName(), 
+                    account.getBalance().doubleValue());
             }
         }
     }
