@@ -12,6 +12,7 @@ public class Main {
     private static List<Transfer> transfers = new ArrayList<>();
 
     public static void main(String[] args) {
+        loadCards();
         loadUsers();
         loadAccounts();
         loadTransfers();
@@ -223,21 +224,8 @@ public class Main {
             }
         }
 
-        BigDecimal interestRate = null;
-        while (interestRate == null) {
-            System.out.print("Enter annual interest rate (e.g., 0.15 for 15%): ");
-            if (scanner.hasNextBigDecimal()) {
-                interestRate = scanner.nextBigDecimal();
-                scanner.nextLine(); // Consume newline
-                if (interestRate.compareTo(BigDecimal.ZERO) <= 0) {
-                    System.out.println("Interest rate must be positive.");
-                    interestRate = null;
-                }
-            } else {
-                System.out.println("Invalid input. Please enter a valid number.");
-                scanner.next();
-            }
-        }
+        BigDecimal interestRate = BigDecimal.valueOf(0.25);
+        System.out.print("Annual interest rate is 25%");
 
         String cardNumber = generateCardNumber();
         CreditCard newCard = new CreditCard(cardNumber, selectedAccount, pin, dailyLimit, creditLimit, interestRate);
@@ -284,8 +272,23 @@ public class Main {
         }
 
         String cardNumber = generateCardNumber();
-        BigDecimal defaultDailyLimit = new BigDecimal("1000"); // Default daily limit of 1000
-        DebitCard newCard = new DebitCard(cardNumber, selectedAccount, pin, defaultDailyLimit);
+        // BigDecimal DailyLimit = new BigDecimal(""); // Default daily limit of 1000
+        BigDecimal dailyLimit = null;
+        while (dailyLimit == null) {
+            System.out.print("Enter daily spending limit: ");
+            if (scanner.hasNextBigDecimal()) {
+                dailyLimit = scanner.nextBigDecimal();
+                scanner.nextLine(); // Consume newline
+                if (dailyLimit.compareTo(BigDecimal.ZERO) <= 0) {
+                    System.out.println("Daily limit must be positive.");
+                    dailyLimit = null;
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next();
+            }
+        }
+        DebitCard newCard = new DebitCard(cardNumber, selectedAccount, pin, dailyLimit);
         loggedInUser.addCard(newCard);
         saveCards();
         System.out.println("Debit card created successfully!");
