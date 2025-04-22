@@ -54,6 +54,11 @@ public class Main {
                     case "V":
                         loggedInUser.printAccounts();
                         break;
+                    case "S":
+                        loggedInUser.sortAccountsByBalance();
+                        System.out.println("\nAccounts sorted by balance (highest to lowest):");
+                        loggedInUser.printAccounts();
+                        break;
                     case "T":
                         performTransfer();
                         break;
@@ -93,6 +98,7 @@ public class Main {
         System.out.println("Welcome, " + loggedInUser.getUsername() + "! Choose an option:");
         System.out.println("C - Create an account");
         System.out.println("V - View accounts");
+        System.out.println("S - Sort accounts by balance");
         System.out.println("T - Transfer money");
         System.out.println("CC - Card Management");
         System.out.println("H - View transfer history");

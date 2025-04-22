@@ -42,10 +42,15 @@ public class User {
         return name + "," + userID;
     }
 
+    public void sortAccountsByBalance() {
+        accounts.sort((a1, a2) -> a2.getBalance().compareTo(a1.getBalance()));
+    }
+
     public void printAccounts() {
         if (accounts.isEmpty()) {
             System.out.println(name + " has no accounts.");
         } else {
+            sortAccountsByBalance();
             for (Account account : accounts) {
                 System.out.printf("Account: %s, Balance: €%.2f%n", 
                     account.getAccountName(), 
