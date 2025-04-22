@@ -1,3 +1,6 @@
+import java.util.Comparator;
+
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,19 +45,46 @@ public class User {
         return name + "," + userID;
     }
 
-    public void sortAccountsByBalance() {
-        accounts.sort((a1, a2) -> a2.getBalance().compareTo(a1.getBalance()));
-    }
-
     public void printAccounts() {
         if (accounts.isEmpty()) {
             System.out.println(name + " has no accounts.");
         } else {
-            sortAccountsByBalance();
             for (Account account : accounts) {
-                System.out.printf("Account: %s, Balance: €%.2f%n", 
+                System.out.printf("Account: %s, Balance: €%s%n", 
                     account.getAccountName(), 
-                    account.getBalance().doubleValue());
+                    account.getBalance());
+            }
+        }
+    }
+
+    public void printAccountsSortedByBalanceDescending() {
+        if (accounts.isEmpty()) {
+            System.out.println(name + " has no accounts.");
+        } else {
+            List<Account> sorted = new ArrayList<>(accounts);
+            sorted.sort(Comparator.comparing(Account::getBalance).reversed());
+    
+            System.out.println("Accounts sorted by balance (highest to lowest):");
+            for (Account account : sorted) {
+                System.out.printf("Account: %s, Balance: €%s%n", 
+                    account.getAccountName(), 
+                    account.getBalance());
+            }
+        }
+    }
+    
+    public void printAccountsSortedByBalanceAscending() {
+        if (accounts.isEmpty()) {
+            System.out.println(name + " has no accounts.");
+        } else {
+            List<Account> sorted = new ArrayList<>(accounts);
+            sorted.sort(Comparator.comparing(Account::getBalance));
+    
+            System.out.println("Accounts sorted by balance (lowest to highest):");
+            for (Account account : sorted) {
+                System.out.printf("Account: %s, Balance: €%s%n", 
+                    account.getAccountName(), 
+                    account.getBalance());
             }
         }
     }

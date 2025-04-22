@@ -55,9 +55,21 @@ public class Main {
                         loggedInUser.printAccounts();
                         break;
                     case "S":
-                        loggedInUser.sortAccountsByBalance();
-                        System.out.println("\nAccounts sorted by balance (highest to lowest):");
-                        loggedInUser.printAccounts();
+                        System.out.println("\nSort options:");
+                        System.out.println("1 - Sort by balance (highest to lowest)");
+                        System.out.println("2 - Sort by balance (lowest to highest)");
+                        System.out.print("Enter your choice: ");
+                        String sortChoice = scanner.nextLine();
+                        switch (sortChoice) {
+                            case "1":
+                                loggedInUser.printAccountsSortedByBalanceDescending();
+                                break;
+                            case "2":
+                                loggedInUser.printAccountsSortedByBalanceAscending();
+                                break;
+                            default:
+                                System.out.println("Invalid sort option.");
+                        }
                         break;
                     case "T":
                         performTransfer();
@@ -98,7 +110,7 @@ public class Main {
         System.out.println("Welcome, " + loggedInUser.getUsername() + "! Choose an option:");
         System.out.println("C - Create an account");
         System.out.println("V - View accounts");
-        System.out.println("S - Sort accounts by balance");
+        System.out.println("S - Sort accounts");
         System.out.println("T - Transfer money");
         System.out.println("CC - Card Management");
         System.out.println("H - View transfer history");
