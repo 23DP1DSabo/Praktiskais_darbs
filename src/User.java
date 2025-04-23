@@ -57,7 +57,7 @@ public class User {
         }
     }
 
-    public void printAccountsSortedByBalanceDescending() {
+    public void SortedByBalanceDescending() {
         if (accounts.isEmpty()) {
             System.out.println(name + " has no accounts.");
         } else {
@@ -73,7 +73,7 @@ public class User {
         }
     }
     
-    public void printAccountsSortedByBalanceAscending() {
+    public void SortedByBalanceAscending() {
         if (accounts.isEmpty()) {
             System.out.println(name + " has no accounts.");
         } else {

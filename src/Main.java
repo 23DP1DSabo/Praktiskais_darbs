@@ -55,17 +55,17 @@ public class Main {
                         loggedInUser.printAccounts();
                         break;
                     case "S":
-                        System.out.println("\nSort options:");
+                        System.out.println("Sort options:");
                         System.out.println("1 - Sort by balance (highest to lowest)");
                         System.out.println("2 - Sort by balance (lowest to highest)");
                         System.out.print("Enter your choice: ");
                         String sortChoice = scanner.nextLine();
                         switch (sortChoice) {
                             case "1":
-                                loggedInUser.printAccountsSortedByBalanceDescending();
+                                loggedInUser.SortedByBalanceDescending();
                                 break;
                             case "2":
-                                loggedInUser.printAccountsSortedByBalanceAscending();
+                                loggedInUser.SortedByBalanceAscending();
                                 break;
                             default:
                                 System.out.println("Invalid sort option.");

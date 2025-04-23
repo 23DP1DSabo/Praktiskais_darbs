@@ -58,4 +58,12 @@ public class Transfer {
         transfer.status = parts[4];
         return transfer;
     }
+
+    public void sortedByDateDescending() {
+
+    }
+
+    public void sortedByDateAscending() {
+        
+    }
 } 
