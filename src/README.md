@@ -21,6 +21,7 @@ Darbības, pārsvarā, tiek veiktas ar opciju izvēlni, kur, atkarībā no jau v
 
 ### Izvēlnes piemērs:
 
+```
 | Option desc.          | Symbol |
 | --------------------- | ------ |
 | Create an account     |   C    |
@@ -34,6 +35,7 @@ Darbības, pārsvarā, tiek veiktas ar opciju izvēlni, kur, atkarībā no jau v
 | Exit the program      |   E    |
 | --------------------- | ------ |
 | Choose an option:     |        |
+```
 
 "Option desc." - Pieejamās opcijas
 "Symbol" - rakstāmais simbols opcijas izvēlei
