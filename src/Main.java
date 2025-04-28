@@ -55,17 +55,17 @@ public class Main {
                         loggedInUser.printAccounts();
                         break;
                     case "S":
-                        System.out.println("Sort options:");
+                        System.out.println("\nSort options:");
                         System.out.println("1 - Sort by balance (highest to lowest)");
                         System.out.println("2 - Sort by balance (lowest to highest)");
                         System.out.print("Enter your choice: ");
                         String sortChoice = scanner.nextLine();
                         switch (sortChoice) {
                             case "1":
-                                loggedInUser.SortedByBalanceDescending();
+                                loggedInUser.printAccountsSortedByBalanceDescending();
                                 break;
                             case "2":
-                                loggedInUser.SortedByBalanceAscending();
+                                loggedInUser.printAccountsSortedByBalanceAscending();
                                 break;
                             default:
                                 System.out.println("Invalid sort option.");
@@ -586,12 +586,31 @@ public class Main {
     }
 
     private static void showTransferHistory() {
-        System.out.println("\nTransfer History:");
+        System.out.println("\nTransfer History Options:");
+        System.out.println("1 - View transfers (oldest to newest)");
+        System.out.println("2 - View transfers (newest to oldest)");
+        System.out.print("Enter your choice: ");
+        String historyChoice = scanner.nextLine();
+        
+        switch (historyChoice) {
+            case "1":
+                printTransfersChronological();
+                break;
+            case "2":
+                printTransfersReverseChronological();
+                break;
+            default:
+                System.out.println("Invalid option.");
+        }
+    }
+
+    private static void printTransfersChronological() {
+        System.out.println("\nTransfer History (oldest to newest):");
         boolean found = false;
         for (Transfer transfer : transfers) {
             if (transfer.getSourceAccountName().equals(loggedInUser.getAccounts().get(0).getAccountName()) ||
                 transfer.getTargetAccountName().equals(loggedInUser.getAccounts().get(0).getAccountName())) {
-                System.out.printf("From: %s, To: %s, Amount: $%s, Date: %s, Status: %s%n",
+                System.out.printf("From: %s, To: %s, Amount: €%s, Date: %s, Status: %s%n",
                     transfer.getSourceAccountName(),
                     transfer.getTargetAccountName(),
                     transfer.getAmount(),
@@ -600,6 +619,36 @@ public class Main {
                 found = true;
             }
         }
+        if (!found) {
+            System.out.println("No transfer history found.");
+        }
+    }
+
+    private static void printTransfersReverseChronological() {
+        System.out.println("\nTransfer History (newest to oldest):");
+        boolean found = false;
+        List<Transfer> userTransfers = new ArrayList<>();
+        
+        // First collect all relevant transfers
+        for (Transfer transfer : transfers) {
+            if (transfer.getSourceAccountName().equals(loggedInUser.getAccounts().get(0).getAccountName()) ||
+                transfer.getTargetAccountName().equals(loggedInUser.getAccounts().get(0).getAccountName())) {
+                userTransfers.add(transfer);
+                found = true;
+            }
+        }
+        
+        // Then print them in reverse order
+        for (int i = userTransfers.size() - 1; i >= 0; i--) {
+            Transfer transfer = userTransfers.get(i);
+            System.out.printf("From: %s, To: %s, Amount: €%s, Date: %s, Status: %s%n",
+                transfer.getSourceAccountName(),
+                transfer.getTargetAccountName(),
+                transfer.getAmount(),
+                transfer.getTimestamp(),
+                transfer.getStatus());
+        }
+        
         if (!found) {
             System.out.println("No transfer history found.");
         }
