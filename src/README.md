@@ -13,10 +13,9 @@ Sistēmas mērķis ir, iepazīstināt lietotāju ar *OOP (Objektorientētas Prog
 
 **Programma ir domāta tikai izglītojošiem nolūkiem un nav paredzēta izplatīšanai, pārdošanai vai implementēšanai reālās finanšu sistēmās, kas darbojas ar reālu valūtu.**
 
-# Lietotāja interfeisa apraksts
+# Lietotāja interfeisa apraksts un struktūra
 Šī ir konsoles programma, tāpēc noformējums ir veikts pārsvarā ar *ASCII un konsoles krāsu* palīdzību. ASCII izpaužas ar interfeisu un tabulām, ērtākai dat pārskatīšanai. Savukārt ar krāsām ir attēlotas, lietotāja veidotās bankas kartes.
 
-# Lietotāja interfeisa struktūra
 Darbības, pārsvarā, tiek veiktas ar opciju izvēlni, kur, atkarībā no jau veiktajām darbībām, ir piedāvatas dažādu funkciju veikšanai. 
 
 ### Izvēlnes piemērs:
@@ -42,12 +41,12 @@ Darbības, pārsvarā, tiek veiktas ar opciju izvēlni, kur, atkarībā no jau v
 
 ---
 # Funkcionalitāte
-Šeit tiks norādītas un sīkāk aprakstītas pieejamās funkcijas.
+Šeit tiks norādītas un sīkāk aprakstītas visas pieejamās funkcijas.
 
 ## Vieša izvēlne:
 
 ### Lietotāja reģistrācija
-Ievadot simbolu "R", lietotājam izvada citu lapu, kur tam pieprasa papildus ievadīt savu jaunu lietotājvārdu. To ievadot, lietotājs tiek sekmīgi reģistrēts un tam tiek piešķirts lietotāja ID. ID, šajā gadījumā, aizvieto paroli.
+Ievadot simbolu "R", lietotājam izvada citu lapu, kur tam pieprasa papildus ievadīt savu jaunu lietotājvārdu. To ievadot, lietotājs tiek sekmīgi reģistrēts un tiek atvērta lietotāja izvēlne.
 
 ### Pieslēgšanās eksistējošam lietotājam 
 Ievadot simbolu "L", lietotājam izvada citu lapu, kur tam pieprasa ievadīt savu eksistējošu lietotājvārdu. Ievadot pareizi, lietotājs sekmīgi pieslēdzas. 
@@ -58,34 +57,34 @@ Ievadot simbolu "E", programma aizveras.
 ## Lietotāja izvēlne:
 
 ### Konta atvēršana
-Ievadot simbolu "C", lietotājam izvada citu lapu
+Ievadot simbolu "C", lietotājam tiek pieprasīts izveidot konta lietotājvārdu. To ievadot, konts tiek atvērts un tam tiek piešķirts konta ID. ID, šajā gadījumā, aizvieto paroli.
 
 ### Kontu pārskats
-Ievadot simbolu "V", lietotājam izvada citu lapu
+Ievadot simbolu "V", lietotājam tiek parādīts saraksts (attēlots ar ASCII tabulu) ar izveidotajiem kontiem un to datiem.
 
 ### Kontu kārtošana
-Ievadot simbolu "S", lietotājam izvada citu lapu
+Ievadot simbolu "S", lietotājam tiek piedāvātas dažādas opcijas par to kādā secībā sakārtot kontus, iepriekš minētā tabulā.
 
 ### Naudas pārskaitīšana
-Ievadot simbolu "T", lietotājam izvada citu lapu
+Ievadot simbolu "T", ja ir atvērti vismaz 2 konti, tiek pieprasīts konts uz kuru veikt pārskaitījumu un naudas summa ko pārskaitīt. Nevar norādīt to pašu kontu pie kura pašlaik ir pieslēgts lietotājs.
 
 ### Debit un kredītkaršu izveide un pārlūkošana
-Ievadot simbolu "CC", lietotājam izvada citu lapu
+Ievadot simbolu "CC", lietotājam izvada lapu, kur ir iespēja pārvaldīt savas bankas kartes.
 
 ### Naudas pārskaitīšanas vēstures pārskatīšana
-Ievadot simbolu "H", lietotājam izvada citu lapu
+Ievadot simbolu "H", lietotājam tiek parādīta saraksts (attēlots ar ASCII tabulu), kurā ir parādīti veitkie naudas pārskaitījumi uz dotā konta.
 
 ### Nodokļu kalkulators
-Ievadot simbolu "Tax", lietotājam izvada citu lapu
+Ievadot simbolu "Tax", lietotājam izvada nodokļu kalkulatoru.
 
 ## Karšu vadības izvēlne:
 
 ### Kredītkartes izveide
-Ievadot simbolu "1", lietotājam izvada citu lapu
+Ievadot simbolu "1", lietotājam tiek izveidota kredītkarte.
 
 ### Debit kartes izveide
-Ievadot simbolu "2", lietotājam izvada citu lapu
+Ievadot simbolu "2", lietotājam tiek izveidota debitkarte.
 
 ### Aiziet atpakaļ uz lietotāja izvēlni
-Ievadot simbolu "3", lietotājam izvada citu lapu
+Ievadot simbolu "3", lietotāju pārnes uz lietotāja izvēlni.
 
