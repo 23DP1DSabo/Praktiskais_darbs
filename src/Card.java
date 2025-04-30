@@ -40,7 +40,7 @@ public abstract class Card {
     }
 
     public String toCSV() {
-        return cardNumber + "," + linkedAccount.getAccountName() + "," + cardType + "," + isActive + "," + pin;
+        return cardNumber + "," + linkedAccount.getAccountName() + "," + cardType + "," + isActive + "," + pin + "," + linkedAccount.getOwnerId();
     }
 
     // Abstract methods that must be implemented by subclasses

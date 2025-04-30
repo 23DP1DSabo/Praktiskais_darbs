@@ -326,7 +326,7 @@ public class Main {
     }
 
     private static void saveCards() {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("data/cards.csv"))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("data/cards.csv", true))) {
             for (User user : users.values()) {
                 for (Card card : user.getCards()) {
                     bw.write(card.toCSV());
@@ -343,12 +343,13 @@ public class Main {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 5) {
+                if (parts.length >= 6) {
                     String cardNumber = parts[0];
                     String accountName = parts[1];
                     String cardType = parts[2];
                     boolean isActive = Boolean.parseBoolean(parts[3]);
                     String pin = parts[4];
+                    String userId = parts[5];
 
                     // Find the account
                     Account linkedAccount = null;
@@ -365,19 +366,19 @@ public class Main {
                     if (linkedAccount != null) {
                         Card card;
                         if (cardType.equals("DEBIT")) {
-                            BigDecimal dailyLimit = new BigDecimal(parts[5]);
+                            BigDecimal dailyLimit = new BigDecimal(parts[6]);
                             card = new DebitCard(cardNumber, linkedAccount, pin, dailyLimit);
                         } else {
-                            BigDecimal dailyLimit = new BigDecimal(parts[5]);
-                            BigDecimal creditLimit = new BigDecimal(parts[6]);
-                            BigDecimal interestRate = new BigDecimal(parts[7]);
+                            BigDecimal dailyLimit = new BigDecimal(parts[6]);
+                            BigDecimal creditLimit = new BigDecimal(parts[7]);
+                            BigDecimal interestRate = new BigDecimal(parts[8]);
                             card = new CreditCard(cardNumber, linkedAccount, pin, dailyLimit, creditLimit, interestRate);
                         }
                         card.setActive(isActive);
                         
                         // Find the user who owns the account
                         for (User user : users.values()) {
-                            if (user.getAccounts().contains(linkedAccount)) {
+                            if (user.getUserID().equals(userId)) {
                                 user.addCard(card);
                                 break;
                             }
