@@ -62,10 +62,10 @@ public class Main {
                         String sortChoice = scanner.nextLine();
                         switch (sortChoice) {
                             case "1":
-                                loggedInUser.printAccountsSortedByBalanceDescending();
+                                loggedInUser.SortedByBalanceDescending();
                                 break;
                             case "2":
-                                loggedInUser.printAccountsSortedByBalanceAscending();
+                                loggedInUser.SortedByBalanceAscending();
                                 break;
                             default:
                                 System.out.println("Invalid sort option.");
