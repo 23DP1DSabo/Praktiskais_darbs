@@ -1,20 +1,21 @@
 import java.util.Comparator;
-
-
 import java.util.ArrayList;
 import java.util.List;
+import java.math.BigDecimal;
 
 public class User {
     private String name;
     private String userID;
     private List<Account> accounts;
     private List<Card> cards;
+    private List<Loan> loans;
 
     public User(String name, String userID) {
         this.name = name;
         this.userID = userID;
         this.accounts = new ArrayList<>();
         this.cards = new ArrayList<>();
+        this.loans = new ArrayList<>();
     }
 
     public void addAccount(Account account) {
@@ -25,12 +26,20 @@ public class User {
         cards.add(card);
     }
 
+    public void addLoan(Loan loan) {
+        loans.add(loan);
+    }
+
     public List<Account> getAccounts() {
         return accounts;
     }
 
     public List<Card> getCards() {
         return cards;
+    }
+
+    public List<Loan> getLoans() {
+        return loans;
     }
 
     public String getUserID() {
@@ -53,6 +62,21 @@ public class User {
                 System.out.printf("Account: %s, Balance: €%s%n", 
                     account.getAccountName(), 
                     account.getBalance());
+            }
+        }
+    }
+
+    public void printLoans() {
+        if (loans.isEmpty()) {
+            System.out.println(name + " has no loans.");
+        } else {
+            for (Loan loan : loans) {
+                System.out.printf("Loan ID: %s, Account: %s, Principal: €%s, Remaining: €%s, Monthly Payment: €%s%n",
+                    loan.getLoanId(),
+                    loan.getAccountName(),
+                    loan.getPrincipal(),
+                    loan.getRemainingAmount(),
+                    loan.getMonthlyPayment());
             }
         }
     }

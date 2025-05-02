@@ -6,16 +6,17 @@ public class Main {
     private static final String USER_FILE = "data/users.csv";
     private static final String ACCOUNT_FILE = "data/accounts.csv";
     private static final String TRANSFER_FILE = "data/transfers.csv";
+    private static final String LOAN_FILE = "data/loans.csv";
     private static Scanner scanner = new Scanner(System.in);
     private static Map<String, User> users = new HashMap<>();
     private static User loggedInUser = null;
     private static List<Transfer> transfers = new ArrayList<>();
 
     public static void main(String[] args) {
-        loadCards();
         loadUsers();
         loadAccounts();
         loadTransfers();
+        loadLoans();
 
         boolean running = true;
         while (running) {
@@ -40,6 +41,7 @@ public class Main {
                         saveUsers();
                         saveAccounts();
                         saveTransfers();
+                        saveLoans();
                         System.out.println("Exiting...");
                         running = false;
                         break;
@@ -77,6 +79,9 @@ public class Main {
                     case "CC":
                         showCardMenu();
                         break;
+                    case "L":
+                        showLoanMenu();
+                        break;
                     case "H":
                         showTransferHistory();
                         break;
@@ -88,6 +93,7 @@ public class Main {
                         saveUsers();
                         saveAccounts();
                         saveTransfers();
+                        saveLoans();
                         System.out.println("Exiting...");
                         running = false;
                         break;
@@ -113,6 +119,7 @@ public class Main {
         System.out.println("S - Sort accounts");
         System.out.println("T - Transfer money");
         System.out.println("CC - Card Management");
+        System.out.println("L - Loan Management");
         System.out.println("H - View transfer history");
         System.out.println("L-OUT - Log out");
         System.out.println("E - Exit");
@@ -121,18 +128,177 @@ public class Main {
     private static void showCardMenu() {
         System.out.println("Card Management Menu:");
         System.out.println("1 - Create Debit Card");
-        System.out.println("2 - Create Credit Card");
-        System.out.println("3 - Back to Main Menu");
+        System.out.println("2 - Back to Main Menu");
         String card_choice = scanner.nextLine().trim().toUpperCase();
         switch (card_choice) {
             case "1":
                 createDebit();
                 break;
             case "2":
-                createCredit();
+                break;
+        }
+    }
+
+    private static void showLoanMenu() {
+        System.out.println("Loan Management Menu:");
+        System.out.println("1 - Create Loan");
+        System.out.println("2 - View Loans");
+        System.out.println("3 - Make Loan Payment");
+        System.out.println("4 - Back to Main Menu");
+        String loan_choice = scanner.nextLine().trim();
+        switch (loan_choice) {
+            case "1":
+                createLoan();
+                break;
+            case "2":
+                loggedInUser.printLoans();
                 break;
             case "3":
+                if (loggedInUser.getLoans().isEmpty()) {
+                    System.out.println("You have no loans.");
+                    return;
+                }
+
+                System.out.println("Your loans:");
+                loggedInUser.printLoans();
+                System.out.print("Enter loan ID to make payment: ");
+                String loanId = scanner.nextLine();
+
+                Loan selectedLoan = null;
+                for (Loan loan : loggedInUser.getLoans()) {
+                    if (loan.getLoanId().equals(loanId)) {
+                        selectedLoan = loan;
+                        break;
+                    }
+                }
+
+                if (selectedLoan == null) {
+                    System.out.println("Loan not found.");
+                    return;
+                }
+
+                Account linkedAccount = null;
+                for (Account acc : loggedInUser.getAccounts()) {
+                    if (acc.getAccountName().equals(selectedLoan.getAccountName())) {
+                        linkedAccount = acc;
+                        break;
+                    }
+                }
+
+                if (linkedAccount == null) {
+                    System.out.println("Linked account not found.");
+                    return;
+                }
+
+                Loan.processPayment(selectedLoan, linkedAccount, scanner);
+                saveAccounts();
+                saveLoans();
                 break;
+            case "4":
+                break;
+        }
+    }
+
+    private static void createLoan() {
+        if (loggedInUser == null) {
+            System.out.println("Please log in first.");
+            return;
+        }
+
+        if (loggedInUser.getAccounts().isEmpty()) {
+            System.out.println("You need to have at least one account to create a loan.");
+            return;
+        }
+
+        System.out.println("Your accounts:");
+        loggedInUser.printAccounts();
+        System.out.print("Enter account name to link the loan to: ");
+        String accName = scanner.nextLine();
+
+        Account selectedAccount = null;
+        for (Account acc : loggedInUser.getAccounts()) {
+            if (acc.getAccountName().equals(accName)) {
+                selectedAccount = acc;
+                break;
+            }
+        }
+
+        if (selectedAccount == null) {
+            System.out.println("Account not found.");
+            return;
+        }
+
+        BigDecimal principal = null;
+        while (principal == null) {
+            System.out.print("Enter loan amount: ");
+            if (scanner.hasNextBigDecimal()) {
+                principal = scanner.nextBigDecimal();
+                scanner.nextLine(); // Consume newline
+                if (principal.compareTo(BigDecimal.ZERO) <= 0) {
+                    System.out.println("Loan amount must be positive.");
+                    principal = null;
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next();
+            }
+        }
+
+        int termMonths = 0;
+        while (termMonths <= 0) {
+            System.out.print("Enter loan term in months: ");
+            if (scanner.hasNextInt()) {
+                termMonths = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+                if (termMonths <= 0) {
+                    System.out.println("Term must be positive.");
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next();
+            }
+        }
+
+        BigDecimal interestRate = BigDecimal.valueOf(0.10); // 10% annual interest rate
+        System.out.println("Annual interest rate is 10%");
+
+        Loan newLoan = new Loan(accName, principal, interestRate, termMonths);
+        loggedInUser.addLoan(newLoan);
+        saveLoans();
+        System.out.println("Loan created successfully!");
+        System.out.println("Loan ID: " + newLoan.getLoanId());
+        System.out.printf("Monthly Payment: €%s%n", newLoan.getMonthlyPayment());
+    }
+
+    private static void loadLoans() {
+        try (BufferedReader br = new BufferedReader(new FileReader(LOAN_FILE))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                Loan loan = Loan.fromCSV(line);
+                for (User user : users.values()) {
+                    for (Account acc : user.getAccounts()) {
+                        if (acc.getAccountName().equals(loan.getAccountName())) {
+                            user.addLoan(loan);
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("No existing loan data found.");
+        }
+    }
+
+    private static void saveLoans() {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(LOAN_FILE))) {
+            for (User user : users.values()) {
+                for (Loan loan : user.getLoans()) {
+                    bw.write(loan.toCSV());
+                    bw.newLine();
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error saving loan data: " + e.getMessage());
         }
     }
 
@@ -172,85 +338,6 @@ public class Main {
         } catch (IOException e) {
             System.out.println("No existing account data found.");
         }
-    }
-
-    private static void createCredit() {
-        if (loggedInUser == null) {
-            System.out.println("Please log in first.");
-            return;
-        }
-
-        if (loggedInUser.getAccounts().isEmpty()) {
-            System.out.println("You need to have at least one account to create a credit card.");
-            return;
-        }
-
-        System.out.println("Your accounts:");
-        loggedInUser.printAccounts();
-        System.out.print("Enter account name to link the card to: ");
-        String accName = scanner.nextLine();
-
-        Account selectedAccount = null;
-        for (Account acc : loggedInUser.getAccounts()) {
-            if (acc.getAccountName().equals(accName)) {
-                selectedAccount = acc;
-                break;
-            }
-        }
-
-        if (selectedAccount == null) {
-            System.out.println("Account not found.");
-            return;
-        }
-
-        System.out.print("Enter PIN (4 digits): ");
-        String pin = scanner.nextLine();
-        while (!pin.matches("\\d{4}")) {
-            System.out.println("PIN must be 4 digits. Try again: ");
-            pin = scanner.nextLine();
-        }
-
-        BigDecimal dailyLimit = null;
-        while (dailyLimit == null) {
-            System.out.print("Enter daily spending limit: ");
-            if (scanner.hasNextBigDecimal()) {
-                dailyLimit = scanner.nextBigDecimal();
-                scanner.nextLine(); // Consume newline
-                if (dailyLimit.compareTo(BigDecimal.ZERO) <= 0) {
-                    System.out.println("Daily limit must be positive.");
-                    dailyLimit = null;
-                }
-            } else {
-                System.out.println("Invalid input. Please enter a valid number.");
-                scanner.next();
-            }
-        }
-
-        BigDecimal creditLimit = null;
-        while (creditLimit == null) {
-            System.out.print("Enter credit limit: ");
-            if (scanner.hasNextBigDecimal()) {
-                creditLimit = scanner.nextBigDecimal();
-                scanner.nextLine(); // Consume newline
-                if (creditLimit.compareTo(BigDecimal.ZERO) <= 0) {
-                    System.out.println("Credit limit must be positive.");
-                    creditLimit = null;
-                }
-            } else {
-                System.out.println("Invalid input. Please enter a valid number.");
-                scanner.next();
-            }
-        }
-
-        BigDecimal interestRate = BigDecimal.valueOf(0.25);
-        System.out.print("Annual interest rate is 25%");
-
-        String cardNumber = generateCardNumber();
-        CreditCard newCard = new CreditCard(cardNumber, selectedAccount, pin, dailyLimit, creditLimit, interestRate);
-        loggedInUser.addCard(newCard);
-        saveCards();
-        System.out.println("Credit card created successfully!");
-        System.out.println("Card Number: " + cardNumber);
     }
 
     private static void createDebit() {
@@ -368,19 +455,14 @@ public class Main {
                         if (cardType.equals("DEBIT")) {
                             BigDecimal dailyLimit = new BigDecimal(parts[6]);
                             card = new DebitCard(cardNumber, linkedAccount, pin, dailyLimit);
-                        } else {
-                            BigDecimal dailyLimit = new BigDecimal(parts[6]);
-                            BigDecimal creditLimit = new BigDecimal(parts[7]);
-                            BigDecimal interestRate = new BigDecimal(parts[8]);
-                            card = new CreditCard(cardNumber, linkedAccount, pin, dailyLimit, creditLimit, interestRate);
-                        }
-                        card.setActive(isActive);
-                        
-                        // Find the user who owns the account
-                        for (User user : users.values()) {
-                            if (user.getUserID().equals(userId)) {
-                                user.addCard(card);
-                                break;
+                            card.setActive(isActive);
+                            
+                            // Find the user who owns the account
+                            for (User user : users.values()) {
+                                if (user.getUserID().equals(userId)) {
+                                    user.addCard(card);
+                                    break;
+                                }
                             }
                         }
                     }
