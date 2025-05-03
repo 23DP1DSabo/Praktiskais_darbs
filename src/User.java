@@ -1,7 +1,6 @@
 import java.util.Comparator;
 import java.util.ArrayList;
 import java.util.List;
-import java.math.BigDecimal;
 
 public class User {
     private String name;
@@ -19,6 +18,12 @@ public class User {
     }
 
     public void addAccount(Account account) {
+        // Check if account name already exists for this user
+        for (Account existingAccount : accounts) {
+            if (existingAccount.getAccountName().equals(account.getAccountName())) {
+                throw new IllegalArgumentException("Account name already exists for this user");
+            }
+        }
         accounts.add(account);
     }
 

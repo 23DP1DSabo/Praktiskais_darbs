@@ -76,6 +76,12 @@ public class Main {
                     case "T":
                         performTransfer();
                         break;
+                    case "D":
+                        performDeposit();
+                        break;
+                    case "W":
+                        performWithdraw();
+                        break;
                     case "CC":
                         showCardMenu();
                         break;
@@ -118,6 +124,8 @@ public class Main {
         System.out.println("V - View accounts");
         System.out.println("S - Sort accounts");
         System.out.println("T - Transfer money");
+        System.out.println("D - Deposit money");
+        System.out.println("W - Withdraw money");
         System.out.println("CC - Card Management");
         System.out.println("L - Loan Management");
         System.out.println("H - View transfer history");
@@ -128,13 +136,17 @@ public class Main {
     private static void showCardMenu() {
         System.out.println("Card Management Menu:");
         System.out.println("1 - Create Debit Card");
-        System.out.println("2 - Back to Main Menu");
+        System.out.println("2 - Make Payment");
+        System.out.println("3 - Back to Main Menu");
         String card_choice = scanner.nextLine().trim().toUpperCase();
         switch (card_choice) {
             case "1":
                 createDebit();
                 break;
             case "2":
+                makeCardPayment();
+                break;
+            case "3":
                 break;
         }
     }
@@ -425,7 +437,7 @@ public class Main {
         }
     }
 
-    private static void loadCards() {
+    public static void loadCards() {
         try (BufferedReader br = new BufferedReader(new FileReader("data/cards.csv"))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -476,6 +488,13 @@ public class Main {
     private static void registerUser() {
         System.out.print("Enter username: ");
         String username = scanner.nextLine();
+        
+        // Check username length
+        if (username.length() > 16) {
+            System.out.println("Username cannot be longer than 16 characters.");
+            return;
+        }
+
         String userId = UUID.randomUUID().toString().substring(0, 8);
 
         if (users.containsKey(username)) {
@@ -498,6 +517,21 @@ public class Main {
 
         System.out.print("Enter account name: ");
         String accName = scanner.nextLine();
+
+        // Check for reserved account names
+        if (accName.equalsIgnoreCase("DEPOSIT") || 
+            accName.equalsIgnoreCase("WITHDRAWAL") || 
+            accName.equalsIgnoreCase("CARD_PAYMENT")) {
+            System.out.println("This account name is reserved and cannot be used.");
+            return;
+        }
+
+        // Check account name length
+        if (accName.length() > 16) {
+            System.out.println("Account name cannot be longer than 16 characters.");
+            return;
+        }
+
         BigDecimal balance = null;
         while (balance == null) {
             System.out.print("Enter initial balance: ");
@@ -677,63 +711,209 @@ public class Main {
         
         switch (historyChoice) {
             case "1":
-                printTransfersChronological();
+                Transfer.printTransfersChronological(transfers, loggedInUser.getAccounts().get(0).getAccountName());
                 break;
             case "2":
-                printTransfersReverseChronological();
+                Transfer.printTransfersReverseChronological(transfers, loggedInUser.getAccounts().get(0).getAccountName());
                 break;
             default:
                 System.out.println("Invalid option.");
         }
     }
 
-    private static void printTransfersChronological() {
-        System.out.println("\nTransfer History (oldest to newest):");
-        boolean found = false;
-        for (Transfer transfer : transfers) {
-            if (transfer.getSourceAccountName().equals(loggedInUser.getAccounts().get(0).getAccountName()) ||
-                transfer.getTargetAccountName().equals(loggedInUser.getAccounts().get(0).getAccountName())) {
-                System.out.printf("From: %s, To: %s, Amount: €%s, Date: %s, Status: %s%n",
-                    transfer.getSourceAccountName(),
-                    transfer.getTargetAccountName(),
-                    transfer.getAmount(),
-                    transfer.getTimestamp(),
-                    transfer.getStatus());
-                found = true;
+    private static void makeCardPayment() {
+        if (loggedInUser == null) {
+            System.out.println("Please log in first.");
+            return;
+        }
+
+        if (loggedInUser.getCards().isEmpty()) {
+            System.out.println("You have no cards.");
+            return;
+        }
+
+        System.out.println("Your cards:");
+        for (Card card : loggedInUser.getCards()) {
+            System.out.println("Card Number: " + card.getCardNumber());
+            System.out.println("Linked Account: " + card.getLinkedAccount().getAccountName());
+            System.out.println("Status: " + (card.isActive() ? "Active" : "Inactive"));
+            System.out.println("------------------------");
+        }
+
+        System.out.print("Enter card number to use: ");
+        String cardNumber = scanner.nextLine();
+
+        Card selectedCard = null;
+        for (Card card : loggedInUser.getCards()) {
+            if (card.getCardNumber().equals(cardNumber)) {
+                selectedCard = card;
+                break;
             }
         }
-        if (!found) {
-            System.out.println("No transfer history found.");
+
+        if (selectedCard == null) {
+            System.out.println("Card not found.");
+            return;
+        }
+
+        if (!selectedCard.isActive()) {
+            System.out.println("This card is inactive.");
+            return;
+        }
+
+        System.out.print("Enter payment amount: ");
+        BigDecimal amount = null;
+        while (amount == null) {
+            if (scanner.hasNextBigDecimal()) {
+                amount = scanner.nextBigDecimal();
+                scanner.nextLine(); // Consume newline
+                if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+                    System.out.println("Amount must be positive.");
+                    amount = null;
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next();
+            }
+        }
+
+        // Process the payment
+        Account linkedAccount = selectedCard.getLinkedAccount();
+        if (amount.compareTo(linkedAccount.getBalance()) > 0) {
+            System.out.println("Insufficient funds.");
+            return;
+        }
+
+        // Create a transfer record with empty target account
+        Transfer payment = new Transfer(linkedAccount.getAccountName(), "CARD_PAYMENT", amount);
+        payment.setStatus("COMPLETED");
+        transfers.add(payment);
+
+        // Update account balance
+        linkedAccount.setBalance(linkedAccount.getBalance().subtract(amount));
+
+        saveAccounts();
+        saveTransfers();
+        System.out.println("Payment completed successfully!");
+    }
+
+    private static void performDeposit() {
+        if (loggedInUser.getAccounts().isEmpty()) {
+            System.out.println("You need to have at least one account to make a deposit.");
+            return;
+        }
+
+        System.out.println("\nYour accounts:");
+        loggedInUser.printAccounts();
+        
+        System.out.print("\nEnter account name: ");
+        String accName = scanner.nextLine();
+        
+        Account selectedAccount = null;
+        for (Account acc : loggedInUser.getAccounts()) {
+            if (acc.getAccountName().equals(accName)) {
+                selectedAccount = acc;
+                break;
+            }
+        }
+        
+        if (selectedAccount == null) {
+            System.out.println("Account not found!");
+            return;
+        }
+
+        BigDecimal amount = null;
+        while (amount == null) {
+            System.out.print("Enter amount to deposit: ");
+            if (scanner.hasNextBigDecimal()) {
+                amount = scanner.nextBigDecimal();
+                scanner.nextLine(); // Consume newline
+                if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+                    System.out.println("Amount must be positive.");
+                    amount = null;
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next();
+            }
+        }
+
+        Deposit deposit = new Deposit(accName, amount);
+        if (selectedAccount.deposit(amount)) {
+            deposit.setStatus("COMPLETED");
+            saveAccounts();
+            System.out.println("Deposit completed successfully!");
+        } else {
+            deposit.setStatus("INCOMPLETE");
+            System.out.println("Deposit failed. Please check the amount.");
+        }
+
+        // Record the deposit
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(TRANSFER_FILE, true))) {
+            bw.write(deposit.toCSV());
+            bw.newLine();
+        } catch (IOException e) {
+            System.out.println("Error recording deposit: " + e.getMessage());
         }
     }
 
-    private static void printTransfersReverseChronological() {
-        System.out.println("\nTransfer History (newest to oldest):");
-        boolean found = false;
-        List<Transfer> userTransfers = new ArrayList<>();
+    private static void performWithdraw() {
+        if (loggedInUser.getAccounts().isEmpty()) {
+            System.out.println("You need to have at least one account to make a withdrawal.");
+            return;
+        }
+
+        System.out.println("\nYour accounts:");
+        loggedInUser.printAccounts();
         
-        // First collect all relevant transfers
-        for (Transfer transfer : transfers) {
-            if (transfer.getSourceAccountName().equals(loggedInUser.getAccounts().get(0).getAccountName()) ||
-                transfer.getTargetAccountName().equals(loggedInUser.getAccounts().get(0).getAccountName())) {
-                userTransfers.add(transfer);
-                found = true;
+        System.out.print("\nEnter account name: ");
+        String accName = scanner.nextLine();
+        
+        Account selectedAccount = null;
+        for (Account acc : loggedInUser.getAccounts()) {
+            if (acc.getAccountName().equals(accName)) {
+                selectedAccount = acc;
+                break;
             }
         }
         
-        // Then print them in reverse order
-        for (int i = userTransfers.size() - 1; i >= 0; i--) {
-            Transfer transfer = userTransfers.get(i);
-            System.out.printf("From: %s, To: %s, Amount: €%s, Date: %s, Status: %s%n",
-                transfer.getSourceAccountName(),
-                transfer.getTargetAccountName(),
-                transfer.getAmount(),
-                transfer.getTimestamp(),
-                transfer.getStatus());
+        if (selectedAccount == null) {
+            System.out.println("Account not found!");
+            return;
         }
-        
-        if (!found) {
-            System.out.println("No transfer history found.");
+
+        BigDecimal amount = null;
+        while (amount == null) {
+            System.out.print("Enter amount to withdraw: ");
+            if (scanner.hasNextBigDecimal()) {
+                amount = scanner.nextBigDecimal();
+                scanner.nextLine(); // Consume newline
+                if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+                    System.out.println("Amount must be positive.");
+                    amount = null;
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next();
+            }
+        }
+
+        Withdrawal withdrawal = new Withdrawal(accName, amount);
+        if (selectedAccount.withdraw(amount)) {
+            withdrawal.setStatus("COMPLETED");
+            saveAccounts();
+            System.out.println("Withdrawal completed successfully!");
+        } else {
+            withdrawal.setStatus("INCOMPLETE");
+            System.out.println("Withdrawal failed. Please check the amount and available balance.");
+        }
+
+        // Record the withdrawal
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(TRANSFER_FILE, true))) {
+            bw.write(withdrawal.toCSV());
+            bw.newLine();
+        } catch (IOException e) {
+            System.out.println("Error recording withdrawal: " + e.getMessage());
         }
     }
 }

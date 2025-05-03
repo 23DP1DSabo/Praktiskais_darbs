@@ -30,4 +30,23 @@ public class Account {
     public String toCSV() {
         return accName + "," + ownerId + "," + balance;
     }
+
+    public boolean withdraw(BigDecimal amount) {
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            return false;
+        }
+        if (amount.compareTo(balance) > 0) {
+            return false;
+        }
+        balance = balance.subtract(amount);
+        return true;
+    }
+
+    public boolean deposit(BigDecimal amount) {
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            return false;
+        }
+        balance = balance.add(amount);
+        return true;
+    }
 }
