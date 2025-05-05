@@ -53,11 +53,11 @@ public class InvestCalc {
             }
 
             scanner.nextLine();
-            while (!type.equalsIgnoreCase("one-time") && !type.equalsIgnoreCase("recurring")) {
-                System.out.print("Enter investment type (one-time or recurring): ");
+            while (!type.equalsIgnoreCase("ot") && !type.equalsIgnoreCase("rec")) {
+                System.out.print("Enter investment type (one-time: 'ot'; recurring: 'rec'): ");
                 type = scanner.nextLine().trim().toLowerCase();
-                if (!type.equals("one-time") && !type.equals("recurring")) {
-                    System.out.println("Invalid type. Choose 'one-time' or 'recurring'.");
+                if (!type.equals("ot") && !type.equals("rec")) {
+                    System.out.println("Invalid type. Choose 'ot' or 'rec'.");
                 }
             }
 
@@ -66,7 +66,7 @@ public class InvestCalc {
 
 
             double finalAmount;
-            if (type.equals("one-time")) {
+            if (type.equals("ot")) {
 
                 finalAmount = amount * Math.pow(1 + monthlyRate, months);
             } else {
