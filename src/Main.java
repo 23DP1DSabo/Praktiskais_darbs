@@ -88,6 +88,9 @@ public class Main {
                     case "L":
                         showLoanMenu();
                         break;
+                    case "IC":
+                        InvestCalc.calcInvestment();
+                        break;
                     case "H":
                         showTransferHistory();
                         break;
@@ -111,33 +114,76 @@ public class Main {
         scanner.close();
     }
 
+    public static void printMenuTable(String[][] options) {
+        int col1Width = 0;
+        int col2Width = 0;
+        
+        for (String[] row : options) {
+            col1Width = Math.max(col1Width, row[0].length());
+            col2Width = Math.max(col2Width, row[1].length());
+        }
+    
+        col1Width = Math.max(col1Width, 20);
+        col2Width = Math.max(col2Width, 5);
+    
+        String format = "| %-"+ (col1Width) +"s | %-"+ (col2Width) +"s |%n";
+        String line = "+" + "-".repeat(col1Width + 2) + "+" + "-".repeat(col2Width + 2) + "+";
+    
+        System.out.println(line);
+        System.out.printf(format, "Option desc.", "Symbol");
+        System.out.println(line);
+        
+        for (String[] row : options) {
+            System.out.printf(format, row[0], row[1]);
+        }
+        
+        System.out.println(line);
+    }    
+
     private static void showGuestMenu() {
-        System.out.println("Welcome! Choose an option:");
-        System.out.println("R - Register");
-        System.out.println("L - Login");
-        System.out.println("E - Exit");
+        String[][] menuItems = {
+        {"Register", "R"},
+        {"Login", "L"},
+        {"Exit", "E"}
+    };
+    System.out.println("\033[H\033[2J");
+    System.out.flush();
+    System.out.println("Welcome to the Banking System!");
+    printMenuTable(menuItems);
     }
 
-    private static void showUserMenu() {
-        System.out.println("Welcome, " + loggedInUser.getUsername() + "! Choose an option:");
-        System.out.println("C - Create an account");
-        System.out.println("V - View accounts");
-        System.out.println("S - Sort accounts");
-        System.out.println("T - Transfer money");
-        System.out.println("D - Deposit money");
-        System.out.println("W - Withdraw money");
-        System.out.println("CC - Card Management");
-        System.out.println("L - Loan Management");
-        System.out.println("H - View transfer history");
-        System.out.println("L-OUT - Log out");
-        System.out.println("E - Exit");
+    public static void showUserMenu() {
+        String[][] menuItems = {
+            {"Create an account", "C"},
+            {"View accounts", "V"},
+            {"Sort accounts", "S"},
+            {"Transfer money", "T"},
+            {"Deposit money", "D"},
+            {"Withdraw money", "W"},
+            {"Card Management", "CC"},
+            {"Loan Management", "L"},
+            {"Investment Calculator", "IC"},
+            {"View transfer history", "H"},
+            {"Log out", "L-OUT"},
+            {"Exit the program", "E"}
+        };
+        System.out.println("\033[H\033[2J");
+        System.out.flush();
+        System.out.println("Welcome, " + loggedInUser.getUsername() + "!");
+        printMenuTable(menuItems);
     }
 
     private static void showCardMenu() {
-        System.out.println("Card Management Menu:");
-        System.out.println("1 - Create Debit Card");
-        System.out.println("2 - Make Payment");
-        System.out.println("3 - Back to Main Menu");
+        String[][] menuItems = {
+        {"Card Management Menu", ""},
+        {"Create Debit Card", "1"},
+        {"Make Payment", "2"},
+        {"Back to Main Menu", "3"}
+        };
+        System.out.println("\033[H\033[2J");
+        System.out.flush();
+        printMenuTable(menuItems);
+
         String card_choice = scanner.nextLine().trim().toUpperCase();
         switch (card_choice) {
             case "1":
@@ -152,11 +198,17 @@ public class Main {
     }
 
     private static void showLoanMenu() {
-        System.out.println("Loan Management Menu:");
-        System.out.println("1 - Create Loan");
-        System.out.println("2 - View Loans");
-        System.out.println("3 - Make Loan Payment");
-        System.out.println("4 - Back to Main Menu");
+        String[][] menuItems = {
+        {"Loan Management Menu:"},
+        {"1 - Create Loan"},
+        {"2 - View Loans"},
+        {"3 - Make Loan Payment"}, 
+        {"4 - Back to Main Menu"}
+        };
+        System.out.println("\033[H\033[2J");
+        System.out.flush();
+        printMenuTable(menuItems);
+
         String loan_choice = scanner.nextLine().trim();
         switch (loan_choice) {
             case "1":
