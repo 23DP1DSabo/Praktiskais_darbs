@@ -174,12 +174,4 @@ public class Transfer {
             System.out.println("Invalid date format. Please use YYYY-MM-DD format.");
         }
     }
-
-    public void sortedByDateDescending() {
-
-    }
-
-    public void sortedByDateAscending() {
-        
-    }
 } 
