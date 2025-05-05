@@ -1,6 +1,7 @@
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
+import java.time.LocalDateTime;
 
 public class Main {
     private static final String USER_FILE = "data/users.csv";
@@ -706,6 +707,7 @@ public class Main {
         System.out.println("\nTransfer History Options:");
         System.out.println("1 - View transfers (oldest to newest)");
         System.out.println("2 - View transfers (newest to oldest)");
+        System.out.println("3 - Search transfers by date");
         System.out.print("Enter your choice: ");
         String historyChoice = scanner.nextLine();
         
@@ -715,6 +717,9 @@ public class Main {
                 break;
             case "2":
                 Transfer.printTransfersReverseChronological(transfers, loggedInUser.getAccounts().get(0).getAccountName());
+                break;
+            case "3":
+                Transfer.searchTransfersByDate(transfers, loggedInUser.getAccounts(), scanner);
                 break;
             default:
                 System.out.println("Invalid option.");
