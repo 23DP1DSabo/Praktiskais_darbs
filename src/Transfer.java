@@ -3,6 +3,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Transfer {
     private String sourceAccountName;
@@ -111,11 +112,66 @@ public class Transfer {
         }
     }
 
-    public void sortedByDateDescending() {
-
+    public static void printTransfersByDate(List<Transfer> transfers, String accountName, LocalDateTime searchDate) {
+        System.out.println("\nTransfers for " + searchDate.toLocalDate() + ":");
+        boolean found = false;
+        
+        for (Transfer transfer : transfers) {
+            if ((transfer.getSourceAccountName().equals(accountName) ||
+                transfer.getTargetAccountName().equals(accountName)) &&
+                transfer.getTimestamp().toLocalDate().equals(searchDate.toLocalDate())) {
+                System.out.printf("From: %s, To: %s, Amount: €%s, Time: %s, Status: %s%n",
+                    transfer.getSourceAccountName(),
+                    transfer.getTargetAccountName(),
+                    transfer.getAmount(),
+                    transfer.getTimestamp().toLocalTime(),
+                    transfer.getStatus());
+                found = true;
+            }
+        }
+        
+        if (!found) {
+            System.out.println("No transfers found for this date.");
+        }
     }
 
-    public void sortedByDateAscending() {
+    public static void searchTransfersByDate(List<Transfer> transfers, List<Account> userAccounts, Scanner scanner) {
+        if (userAccounts.isEmpty()) {
+            System.out.println("You need to have at least one account to view transfer history.");
+            return;
+        }
+
+        System.out.println("\nYour accounts:");
+        for (Account account : userAccounts) {
+            System.out.printf("Account: %s, Balance: €%s%n", 
+                account.getAccountName(), 
+                account.getBalance());
+        }
         
+        System.out.print("\nEnter account name to search: ");
+        String accName = scanner.nextLine();
+        
+        Account selectedAccount = null;
+        for (Account acc : userAccounts) {
+            if (acc.getAccountName().equals(accName)) {
+                selectedAccount = acc;
+                break;
+            }
+        }
+        
+        if (selectedAccount == null) {
+            System.out.println("Account not found!");
+            return;
+        }
+
+        System.out.print("Enter date to search (YYYY-MM-DD): ");
+        String dateStr = scanner.nextLine();
+        
+        try {
+            LocalDateTime searchDate = LocalDateTime.parse(dateStr + "T00:00:00");
+            printTransfersByDate(transfers, selectedAccount.getAccountName(), searchDate);
+        } catch (Exception e) {
+            System.out.println("Invalid date format. Please use YYYY-MM-DD format.");
+        }
     }
 } 
