@@ -179,7 +179,8 @@ public class Main {
         {"Card Management Menu", ""},
         {"Create Debit Card", "1"},
         {"Make Payment", "2"},
-        {"Back to Main Menu", "3"}
+        {"Delete Card", "3"},
+        {"Back to Main Menu", "4"}
         };
         System.out.println("\033[H\033[2J");
         System.out.flush();
@@ -194,6 +195,9 @@ public class Main {
                 makeCardPayment();
                 break;
             case "3":
+                deleteCard();
+                break;
+            case "4":
                 break;
         }
     }
@@ -971,6 +975,64 @@ public class Main {
             bw.newLine();
         } catch (IOException e) {
             System.out.println("Error recording withdrawal: " + e.getMessage());
+        }
+    }
+
+    private static void deleteCard() {
+        if (loggedInUser == null) {
+            System.out.println("Please log in first.");
+            return;
+        }
+
+        if (loggedInUser.getCards().isEmpty()) {
+            System.out.println("You have no cards to delete.");
+            return;
+        }
+
+        System.out.print("Enter card number to delete: ");
+        String cardNumber = scanner.nextLine();
+
+        Card selectedCard = null;
+        for (Card card : loggedInUser.getCards()) {
+            if (card.getCardNumber().equals(cardNumber)) {
+                selectedCard = card;
+                break;
+            }
+        }
+
+        if (selectedCard == null) {
+            System.out.println("Card not found.");
+            return;
+        }
+
+        // Remove card from user's cards list
+        loggedInUser.getCards().remove(selectedCard);
+
+        // Rewrite the entire cards.csv file without the deleted card
+        try {
+            // Read all cards from the file
+            List<String> remainingCards = new ArrayList<>();
+            try (BufferedReader br = new BufferedReader(new FileReader("data/cards.csv"))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] parts = line.split(",");
+                    if (parts.length >= 1 && !parts[0].equals(cardNumber)) {
+                        remainingCards.add(line);
+                    }
+                }
+            }
+
+            // Write back all cards except the deleted one
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter("data/cards.csv"))) {
+                for (String cardLine : remainingCards) {
+                    bw.write(cardLine);
+                    bw.newLine();
+                }
+            }
+
+            System.out.println("Card deleted successfully!");
+        } catch (IOException e) {
+            System.out.println("Error deleting card: " + e.getMessage());
         }
     }
 }
