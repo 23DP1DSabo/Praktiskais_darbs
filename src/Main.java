@@ -200,14 +200,14 @@ public class Main {
 
     private static void showLoanMenu() {
         String[][] menuItems = {
-        {"Loan Management Menu:"},
-        {"1 - Create Loan"},
-        {"2 - View Loans"},
-        {"3 - Make Loan Payment"}, 
-        {"4 - Back to Main Menu"}
+        {"Create Loan", "1"},
+        {"View Loans", "2"},
+        {"Make Loan Payment", "3"}, 
+        {"Back to Main Menu", "4"}
         };
         System.out.println("\033[H\033[2J");
         System.out.flush();
+        System.oit.println("Loan management Menu");
         printMenuTable(menuItems);
 
         String loan_choice = scanner.nextLine().trim();
