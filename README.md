@@ -7,7 +7,7 @@ Sistēmas mērķis ir, iepazīstināt lietotāju ar *OOP (Objektorientētas Prog
 - Kontu atvēršana un pārslēgšanās starp tiem;
 - Debit un kredītkaršu izveide, bloķēšana, dzēšana;
 - Naudas pārskaitīšana citiem kontiem;
-- Nodokļu kalkulators;
+- Investīciju kalkulators;
 - Veikto darbību vēstures apskatīšana;
 - Datu filtrēšana un kārtošana;
 
@@ -22,18 +22,18 @@ Darbības, pārsvarā, tiek veiktas ar opciju izvēlni, kur, atkarībā no jau v
 
 ```
 | Option desc.          | Symbol |
-| --------------------- | ------ |
-| Create an account     |   C    |
-| View accounts         |   V    |
-| Sort accounts         |   S    |
-| Transfer money        |   T    |
-| Card managment        |   CC   |
-| View transfer history |   H    |
-| Tax calculator        |  Tax   |
-| Log out               |  L-OUT |
-| Exit the program      |   E    |
-| --------------------- | ------ |
-| Choose an option:     |        |
++-----------------------+--------+
+| Create an account     | C      |
+| View accounts         | V      |
+| Sort accounts         | S      |
+| Transfer money        | T      |
+| Card managment        | CC     |
+| View transfer history | H      |
+| Tax calculator        | Tax    |
+| Log out               | L-OUT  |
+| Exit the program      | E      |
++-----------------------+--------+
+Input your option:
 ```
 
 "Option desc." - Pieejamās opcijas
@@ -68,7 +68,7 @@ Ievadot simbolu "S", lietotājam tiek piedāvātas dažādas opcijas par to kād
 ### Naudas pārskaitīšana
 Ievadot simbolu "T", ja ir atvērti vismaz 2 konti, tiek pieprasīts konts uz kuru veikt pārskaitījumu un naudas summa ko pārskaitīt. Nevar norādīt to pašu kontu pie kura pašlaik ir pieslēgts lietotājs.
 
-### Debit un kredītkaršu izveide un pārlūkošana
+### Debit karšu izveide un pārlūkošana
 Ievadot simbolu "CC", lietotājam izvada lapu, kur ir iespēja pārvaldīt savas bankas kartes.
 
 ### Naudas pārskaitīšanas vēstures pārskatīšana
@@ -79,12 +79,11 @@ Ievadot simbolu "Tax", lietotājam izvada nodokļu kalkulatoru.
 
 ## Karšu vadības izvēlne:
 
-### Kredītkartes izveide
-Ievadot simbolu "1", lietotājam tiek izveidota kredītkarte.
-
 ### Debit kartes izveide
-Ievadot simbolu "2", lietotājam tiek izveidota debitkarte.
+Ievadot simbolu "1", lietotājam tiek izveidota debitkarte.
 
 ### Aiziet atpakaļ uz lietotāja izvēlni
-Ievadot simbolu "3", lietotāju pārnes uz lietotāja izvēlni.
+Ievadot simbolu "2", lietotāju pārved uz lietotāja izvēlni.
 
+### Karšu dzēšana
+Ievadot simbolu "3", tiks dota izvēle par to, kādu karti dzēst.
