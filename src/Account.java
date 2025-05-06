@@ -68,7 +68,7 @@ public class Account {
         for (Account account : accounts) {
             if (account.getAccountName().toLowerCase().contains(searchName.toLowerCase())) {
                 System.out.printf("Account Name: %s%n", account.getAccountName());
-                System.out.printf("Balance: €%s%n", account.getBalance());
+                System.out.printf("Balance: \u20AC%.2f%n", account.getBalance());
                 System.out.printf("Owner ID: %s%n", account.getOwnerId());
                 System.out.println("----------------");
                 found = true;

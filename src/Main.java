@@ -1,7 +1,6 @@
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
-import java.time.LocalDateTime;
 
 public class Main {
     private static final String USER_FILE = "data/users.csv";
@@ -55,9 +54,15 @@ public class Main {
                         createAccount();
                         break;
                     case "V":
+                        System.out.println("\033[H\033[2J");
+                        System.out.flush();
                         loggedInUser.printAccounts();
+                        System.out.println("\nPress Enter to return to the menu...");
+                        scanner.nextLine();
                         break;
                     case "S":
+                        System.out.println("\033[H\033[2J");
+                        System.out.flush();
                         System.out.println("\nSort options:");
                         System.out.println("1 - Sort by balance (highest to lowest)");
                         System.out.println("2 - Sort by balance (lowest to highest)");
@@ -73,27 +78,57 @@ public class Main {
                             default:
                                 System.out.println("Invalid sort option.");
                         }
+                        System.out.println("\nPress Enter to return to the menu...");
+                        scanner.nextLine();
                         break;
                     case "T":
+                        System.out.println("\033[H\033[2J");
+                        System.out.flush();
                         performTransfer();
+                        System.out.println("\nPress Enter to return to the menu...");
+                        scanner.nextLine();
                         break;
                     case "D":
+                    System.out.println("\033[H\033[2J");
+                    System.out.flush();
                         performDeposit();
+                        System.out.println("\nPress Enter to return to the menu...");
+                        scanner.nextLine();
                         break;
                     case "W":
+                    System.out.println("\033[H\033[2J");
+                    System.out.flush();
                         performWithdraw();
+                        System.out.println("\nPress Enter to return to the menu...");
+                        scanner.nextLine();
                         break;
                     case "CC":
+                    System.out.println("\033[H\033[2J");
+                    System.out.flush();
                         showCardMenu();
+                        System.out.println("\nPress Enter to return to the menu...");
+                        scanner.nextLine();
                         break;
                     case "L":
+                    System.out.println("\033[H\033[2J");
+                    System.out.flush();
                         showLoanMenu();
+                        System.out.println("\nPress Enter to return to the menu...");
+                        scanner.nextLine();
                         break;
                     case "IC":
+                    System.out.println("\033[H\033[2J");
+                    System.out.flush();
                         InvestCalc.calcInvestment();
+                        System.out.println("\nPress Enter to return to the menu...");
+                        scanner.nextLine();
                         break;
                     case "H":
+                    System.out.println("\033[H\033[2J");
+                    System.out.flush();
                         showTransferHistory();
+                        System.out.println("\nPress Enter to return to the menu...");
+                        scanner.nextLine();
                         break;
                     case "L-OUT":
                         System.out.println("Logging out...");
@@ -118,28 +153,29 @@ public class Main {
     public static void printMenuTable(String[][] options) {
         int col1Width = 0;
         int col2Width = 0;
-        
+    
         for (String[] row : options) {
             col1Width = Math.max(col1Width, row[0].length());
             col2Width = Math.max(col2Width, row[1].length());
         }
     
-        col1Width = Math.max(col1Width, 20);
-        col2Width = Math.max(col2Width, 5);
+        col1Width = Math.max(col1Width, "Option desc.".length());
+        col2Width = Math.max(col2Width, "Symbol".length());
     
-        String format = "| %-"+ (col1Width) +"s | %-"+ (col2Width) +"s |%n";
+        String format = "| %-" + col1Width + "s | %-" + col2Width + "s |%n";
         String line = "+" + "-".repeat(col1Width + 2) + "+" + "-".repeat(col2Width + 2) + "+";
     
         System.out.println(line);
         System.out.printf(format, "Option desc.", "Symbol");
         System.out.println(line);
-        
+    
         for (String[] row : options) {
             System.out.printf(format, row[0], row[1]);
         }
-        
+    
         System.out.println(line);
-    }    
+    }
+       
 
     private static void showGuestMenu() {
         String[][] menuItems = {
@@ -171,12 +207,13 @@ public class Main {
         System.out.println("\033[H\033[2J");
         System.out.flush();
         System.out.println("Welcome, " + loggedInUser.getUsername() + "!");
+        System.out.println("Your ID: " + loggedInUser.getUserID());
+        System.out.println("Please select an option:");
         printMenuTable(menuItems);
     }
 
     private static void showCardMenu() {
         String[][] menuItems = {
-        {"Card Management Menu", ""},
         {"Create Debit Card", "1"},
         {"Make Payment", "2"},
         {"Delete Card", "3"},
@@ -184,7 +221,9 @@ public class Main {
         };
         System.out.println("\033[H\033[2J");
         System.out.flush();
+        System.out.println("Card management Menu");
         printMenuTable(menuItems);
+        System.out.print("Enter choice: ");
 
         String card_choice = scanner.nextLine().trim().toUpperCase();
         switch (card_choice) {
@@ -211,8 +250,9 @@ public class Main {
         };
         System.out.println("\033[H\033[2J");
         System.out.flush();
-        System.oit.println("Loan management Menu");
+        System.out.println("Loan management Menu");
         printMenuTable(menuItems);
+        System.out.print("Enter choice: ");
 
         String loan_choice = scanner.nextLine().trim();
         switch (loan_choice) {
@@ -333,10 +373,19 @@ public class Main {
 
         Loan newLoan = new Loan(accName, principal, interestRate, termMonths);
         loggedInUser.addLoan(newLoan);
+
+        selectedAccount.setBalance(selectedAccount.getBalance().add(principal));
+
+
         saveLoans();
+        saveAccounts();
         System.out.println("Loan created successfully!");
         System.out.println("Loan ID: " + newLoan.getLoanId());
-        System.out.printf("Monthly Payment: €%s%n", newLoan.getMonthlyPayment());
+        System.out.printf("Monthly Payment: ?%.2f%n", newLoan.getMonthlyPayment());
+    }
+
+    public static Scanner getScanner() {
+        return scanner;
     }
 
     private static void loadLoans() {
@@ -987,6 +1036,14 @@ public class Main {
         if (loggedInUser.getCards().isEmpty()) {
             System.out.println("You have no cards to delete.");
             return;
+        }
+
+        System.out.println("Your cards:");
+        for (Card card : loggedInUser.getCards()) {
+            System.out.println("Card Number: " + card.getCardNumber());
+            System.out.println("Linked Account: " + card.getLinkedAccount().getAccountName());
+            System.out.println("Status: " + (card.isActive() ? "Active" : "Inactive"));
+            System.out.println("------------------------");
         }
 
         System.out.print("Enter card number to delete: ");

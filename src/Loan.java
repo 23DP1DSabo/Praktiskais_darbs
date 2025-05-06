@@ -1,8 +1,8 @@
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.UUID;
 import java.util.Scanner;
+import java.util.UUID;
 
 public class Loan {
     private String loanId;
@@ -158,7 +158,7 @@ public class Loan {
                 scanner.next();
             }
         }
-
+    
         if (loan.makePayment(amount)) {
             account.setBalance(account.getBalance().subtract(amount));
             System.out.println("Payment successful!");
@@ -168,12 +168,14 @@ public class Loan {
     }
 
     public static void displayLoanDetails(Loan loan) {
+        String status = loan.getRemainingAmount().compareTo(BigDecimal.ZERO) == 0 ? "Repaid" : "In Process";
         System.out.printf("Loan ID: %s%n", loan.getLoanId());
         System.out.printf("Account: %s%n", loan.getAccountName());
-        System.out.printf("Principal: €%s%n", loan.getPrincipal());
-        System.out.printf("Remaining Amount: €%s%n", loan.getRemainingAmount());
-        System.out.printf("Monthly Payment: €%s%n", loan.getMonthlyPayment());
+        System.out.printf("Principal: ?%.2f%n", loan.getPrincipal());
+        System.out.printf("Remaining Amount: ?%.2f%n", loan.getRemainingAmount());
+        System.out.printf("Monthly Payment: ?%.2f%n", loan.getMonthlyPayment());
         System.out.printf("Term: %d months%n", loan.getTermMonths());
-        System.out.printf("Accrued Interest: €%s%n", loan.getInterestAccrued());
+        System.out.printf("Accrued Interest: ?%.2f%n", loan.getInterestAccrued());
+        System.out.printf("Status: %s%n", status);
     }
 } 

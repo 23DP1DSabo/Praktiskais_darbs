@@ -1,5 +1,6 @@
-import java.util.Comparator;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class User {
@@ -64,7 +65,7 @@ public class User {
             System.out.println(name + " has no accounts.");
         } else {
             for (Account account : accounts) {
-                System.out.printf("Account: %s, Balance: €%s%n", 
+                System.out.printf("Account: %s, Balance: ?%.2f%n", 
                     account.getAccountName(), 
                     account.getBalance());
             }
@@ -76,12 +77,14 @@ public class User {
             System.out.println(name + " has no loans.");
         } else {
             for (Loan loan : loans) {
-                System.out.printf("Loan ID: %s, Account: %s, Principal: €%s, Remaining: €%s, Monthly Payment: €%s%n",
+                String status = loan.getRemainingAmount().compareTo(BigDecimal.ZERO) == 0 ? "Repaid" : "In Process";
+                System.out.printf("Loan ID: %s, Account: %s, Principal: ?%.2f, Remaining: ?%.2f, Monthly Payment: ?%.2f%n, Status: %s%n",
                     loan.getLoanId(),
                     loan.getAccountName(),
                     loan.getPrincipal(),
                     loan.getRemainingAmount(),
-                    loan.getMonthlyPayment());
+                    loan.getMonthlyPayment(),
+                    status);
             }
         }
     }
@@ -93,9 +96,11 @@ public class User {
             List<Account> sorted = new ArrayList<>(accounts);
             sorted.sort(Comparator.comparing(Account::getBalance).reversed());
     
+            System.out.println("\033[H\033[2J");
+            System.out.flush();
             System.out.println("Accounts sorted by balance (highest to lowest):");
             for (Account account : sorted) {
-                System.out.printf("Account: %s, Balance: €%s%n", 
+                System.out.printf("Account: %s, Balance: ?%.2f%n", 
                     account.getAccountName(), 
                     account.getBalance());
             }
@@ -109,9 +114,11 @@ public class User {
             List<Account> sorted = new ArrayList<>(accounts);
             sorted.sort(Comparator.comparing(Account::getBalance));
     
+            System.out.println("\033[H\033[2J");
+            System.out.flush();
             System.out.println("Accounts sorted by balance (lowest to highest):");
             for (Account account : sorted) {
-                System.out.printf("Account: %s, Balance: €%s%n", 
+                System.out.printf("Account: %s, Balance: ?%.2f%n", 
                     account.getAccountName(), 
                     account.getBalance());
             }
