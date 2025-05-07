@@ -1,6 +1,16 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.UUID;
 
 public class Main {
     private static final String USER_FILE = "data/users.csv";
@@ -381,7 +391,7 @@ public class Main {
         saveAccounts();
         System.out.println("Loan created successfully!");
         System.out.println("Loan ID: " + newLoan.getLoanId());
-        System.out.printf("Monthly Payment: ?%.2f%n", newLoan.getMonthlyPayment());
+        System.out.printf("Monthly Payment: $%.2f%n", newLoan.getMonthlyPayment());
     }
 
     public static Scanner getScanner() {

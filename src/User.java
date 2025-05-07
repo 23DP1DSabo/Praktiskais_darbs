@@ -65,7 +65,7 @@ public class User {
             System.out.println(name + " has no accounts.");
         } else {
             for (Account account : accounts) {
-                System.out.printf("Account: %s, Balance: ?%.2f%n", 
+                System.out.printf("Account: %s, Balance: $%.2f%n", 
                     account.getAccountName(), 
                     account.getBalance());
             }
@@ -78,7 +78,7 @@ public class User {
         } else {
             for (Loan loan : loans) {
                 String status = loan.getRemainingAmount().compareTo(BigDecimal.ZERO) == 0 ? "Repaid" : "In Process";
-                System.out.printf("Loan ID: %s, Account: %s, Principal: ?%.2f, Remaining: ?%.2f, Monthly Payment: ?%.2f%n, Status: %s%n",
+                System.out.printf("Loan ID: %s, Account: %s, Principal: $%.2f, Remaining: $%.2f, Monthly Payment: $%.2f%n, Status: %s%n",
                     loan.getLoanId(),
                     loan.getAccountName(),
                     loan.getPrincipal(),
@@ -100,7 +100,7 @@ public class User {
             System.out.flush();
             System.out.println("Accounts sorted by balance (highest to lowest):");
             for (Account account : sorted) {
-                System.out.printf("Account: %s, Balance: ?%.2f%n", 
+                System.out.printf("Account: %s, Balance: $%.2f%n", 
                     account.getAccountName(), 
                     account.getBalance());
             }
@@ -118,7 +118,7 @@ public class User {
             System.out.flush();
             System.out.println("Accounts sorted by balance (lowest to highest):");
             for (Account account : sorted) {
-                System.out.printf("Account: %s, Balance: ?%.2f%n", 
+                System.out.printf("Account: %s, Balance: $%.2f%n", 
                     account.getAccountName(), 
                     account.getBalance());
             }

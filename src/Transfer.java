@@ -68,7 +68,7 @@ public class Transfer {
         for (Transfer transfer : transfers) {
             if (transfer.getSourceAccountName().equals(accountName) ||
                 transfer.getTargetAccountName().equals(accountName)) {
-                    System.out.printf("From: %s, To: %s, Amount: ?%.2f, Date: %s, Status: %s%n",
+                    System.out.printf("From: %s, To: %s, Amount: $%.2f, Date: %s, Status: %s%n",
                     transfer.getSourceAccountName(),
                     transfer.getTargetAccountName(),
                     transfer.getAmount(),
@@ -99,7 +99,7 @@ public class Transfer {
         // Then print them in reverse order
         for (int i = userTransfers.size() - 1; i >= 0; i--) {
             Transfer transfer = userTransfers.get(i);
-            System.out.printf("From: %s, To: %s, Amount: ?%.2f, Date: %s, Status: %s%n",
+            System.out.printf("From: %s, To: %s, Amount: $%.2f, Date: %s, Status: %s%n",
             transfer.getSourceAccountName(),
             transfer.getTargetAccountName(),
             transfer.getAmount(),
@@ -120,7 +120,7 @@ public class Transfer {
             if ((transfer.getSourceAccountName().equals(accountName) ||
                 transfer.getTargetAccountName().equals(accountName)) &&
                 transfer.getTimestamp().toLocalDate().equals(searchDate.toLocalDate())) {
-                System.out.printf("From: %s, To: %s, Amount: ?%.2f, Time: %s, Status: %s%n",
+                System.out.printf("From: %s, To: %s, Amount: $%.2f, Time: %s, Status: %s%n",
                     transfer.getSourceAccountName(),
                     transfer.getTargetAccountName(),
                     transfer.getAmount(),
@@ -143,7 +143,7 @@ public class Transfer {
 
         System.out.println("\nYour accounts:");
         for (Account account : userAccounts) {
-            System.out.printf("Account: %s, Balance: ?%.2f%n", 
+            System.out.printf("Account: %s, Balance: $%.2f%n", 
                 account.getAccountName(), 
                 account.getBalance());
         }

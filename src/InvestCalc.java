@@ -74,7 +74,7 @@ public class InvestCalc {
                 }
             }
 
-            System.out.printf("Final investment value after %d months: ?%.2f%n", months, finalAmount);
+            System.out.printf("Final investment value after %d months: $%.2f%n", months, finalAmount);
         } catch (Exception e) {
             System.out.println("An error occurred: " + e.getMessage());
         }

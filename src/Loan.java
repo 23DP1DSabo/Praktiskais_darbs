@@ -171,11 +171,11 @@ public class Loan {
         String status = loan.getRemainingAmount().compareTo(BigDecimal.ZERO) == 0 ? "Repaid" : "In Process";
         System.out.printf("Loan ID: %s%n", loan.getLoanId());
         System.out.printf("Account: %s%n", loan.getAccountName());
-        System.out.printf("Principal: ?%.2f%n", loan.getPrincipal());
-        System.out.printf("Remaining Amount: ?%.2f%n", loan.getRemainingAmount());
-        System.out.printf("Monthly Payment: ?%.2f%n", loan.getMonthlyPayment());
+        System.out.printf("Principal: $%.2f%n", loan.getPrincipal());
+        System.out.printf("Remaining Amount: $%.2f%n", loan.getRemainingAmount());
+        System.out.printf("Monthly Payment: $%.2f%n", loan.getMonthlyPayment());
         System.out.printf("Term: %d months%n", loan.getTermMonths());
-        System.out.printf("Accrued Interest: ?%.2f%n", loan.getInterestAccrued());
+        System.out.printf("Accrued Interest: $%.2f%n", loan.getInterestAccrued());
         System.out.printf("Status: %s%n", status);
     }
 } 
