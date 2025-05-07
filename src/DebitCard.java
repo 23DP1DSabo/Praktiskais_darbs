@@ -22,6 +22,7 @@ public class DebitCard extends Card {
         this.dailySpent = BigDecimal.ZERO;
     }
 
+
     @Override
     public boolean processTransaction(BigDecimal amount, String pin) {
         if (!isActive) {
