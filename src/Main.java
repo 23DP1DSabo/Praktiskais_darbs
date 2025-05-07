@@ -12,6 +12,8 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.UUID;
 
+// java -cp bin Main
+
 public class Main {
     private static final String USER_FILE = "data/users.csv";
     private static final String ACCOUNT_FILE = "data/accounts.csv";
@@ -149,6 +151,8 @@ public class Main {
                         saveAccounts();
                         saveTransfers();
                         saveLoans();
+                        System.out.println("\033[H\033[2J");
+                        System.out.flush();
                         System.out.println("Exiting...");
                         running = false;
                         break;

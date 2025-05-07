@@ -30,7 +30,7 @@ public class Loan {
     }
 
     private void calculateMonthlyPayment() {
-        // Using the formula: P * (r(1+r)^n) / ((1+r)^n - 1)
+        // P * (r(1+r)^n) / ((1+r)^n - 1)
         // where P is principal, r is monthly rate, n is number of payments
         BigDecimal monthlyRate = interestRate.divide(BigDecimal.valueOf(12), 10, BigDecimal.ROUND_HALF_UP);
         BigDecimal onePlusR = BigDecimal.ONE.add(monthlyRate);

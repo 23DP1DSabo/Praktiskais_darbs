@@ -72,8 +72,6 @@ public class DebitCard extends Card {
         BigDecimal dailyLimit = new BigDecimal(parts[5]);
         BigDecimal dailySpent = new BigDecimal(parts[6]);
 
-        // Note: We need to find the actual Account object to link to the card
-        // This will be handled by the Main class when loading cards
         DebitCard card = new DebitCard(cardNumber, null, pin, dailyLimit);
         card.setActive(isActive);
         return card;
