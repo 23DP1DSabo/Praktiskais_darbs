@@ -195,6 +195,14 @@ public class Main {
     };
     System.out.println("\033[H\033[2J");
     System.out.flush();
+    System.out.println(" _______       __      _____  ___   __   ___  ");
+    System.out.println("|   _  \"\\     /\"\"\\    (\\\"   \\|\"  \\ |/\"| /  \") ");
+    System.out.println("(. |_)  :)   /    \\   |.\\\\   \\    |(: |/   /  ");
+    System.out.println("|:     \\/   /' /\\  \\  |: \\.   \\\\  ||    __/   ");
+    System.out.println("(|  _  \\\\  //  __'  \\ |.  \\    \\. |(// _  \\   ");
+    System.out.println("|: |_)  :)/   /  \\\\  \\|    \\    \\ ||: | \\  \\  ");
+    System.out.println("(_______/(___/    \\___)\\___|\\____\\)(__|  \\__) ");
+    System.out.println(" ");
     System.out.println("Welcome to the Banking System!");
     printMenuTable(menuItems);
     }
