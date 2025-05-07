@@ -841,81 +841,98 @@ public class Main {
         }
     }
 
-    private static void makeCardPayment() {
-        if (loggedInUser == null) {
-            System.out.println("Please log in first.");
-            return;
-        }
-
-        if (loggedInUser.getCards().isEmpty()) {
-            System.out.println("You have no cards.");
-            return;
-        }
-
-        System.out.println("Your cards:");
-        for (Card card : loggedInUser.getCards()) {
-            System.out.println("Card Number: " + card.getCardNumber());
-            System.out.println("Linked Account: " + card.getLinkedAccount().getAccountName());
-            System.out.println("Status: " + (card.isActive() ? "Active" : "Inactive"));
-            System.out.println("------------------------");
-        }
-
-        System.out.print("Enter card number to use: ");
-        String cardNumber = scanner.nextLine();
-
-        Card selectedCard = null;
-        for (Card card : loggedInUser.getCards()) {
-            if (card.getCardNumber().equals(cardNumber)) {
-                selectedCard = card;
-                break;
-            }
-        }
-
-        if (selectedCard == null) {
-            System.out.println("Card not found.");
-            return;
-        }
-
-        if (!selectedCard.isActive()) {
-            System.out.println("This card is inactive.");
-            return;
-        }
-
-        System.out.print("Enter payment amount: ");
-        BigDecimal amount = null;
-        while (amount == null) {
-            if (scanner.hasNextBigDecimal()) {
-                amount = scanner.nextBigDecimal();
-                scanner.nextLine(); // Consume newline
-                if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-                    System.out.println("Amount must be positive.");
-                    amount = null;
-                }
-            } else {
-                System.out.println("Invalid input. Please enter a valid number.");
-                scanner.next();
-            }
-        }
-
-        // Process the payment
-        Account linkedAccount = selectedCard.getLinkedAccount();
-        if (amount.compareTo(linkedAccount.getBalance()) > 0) {
-            System.out.println("Insufficient funds.");
-            return;
-        }
-
-        // Create a transfer record with empty target account
-        Transfer payment = new Transfer(linkedAccount.getAccountName(), "CARD_PAYMENT", amount);
-        payment.setStatus("COMPLETED");
-        transfers.add(payment);
-
-        // Update account balance
-        linkedAccount.setBalance(linkedAccount.getBalance().subtract(amount));
-
-        saveAccounts();
-        saveTransfers();
-        System.out.println("Payment completed successfully!");
+private static void makeCardPayment() {
+    if (loggedInUser == null) {
+        System.out.println("Please log in first.");
+        return;
     }
+
+    if (loggedInUser.getCards().isEmpty()) {
+        System.out.println("You have no cards.");
+        return;
+    }
+
+    System.out.println("Your cards:");
+    for (Card card : loggedInUser.getCards()) {
+        System.out.println("Card Number: " + card.getCardNumber());
+        System.out.println("Linked Account: " + card.getLinkedAccount().getAccountName());
+        System.out.println("Status: " + (card.isActive() ? "Active" : "Inactive"));
+        if (card instanceof DebitCard) {
+            DebitCard debitCard = (DebitCard) card;
+            System.out.printf("Daily Limit: $%.2f, Daily Spent: $%.2f%n", 
+                debitCard.getDailyLimit(), debitCard.getDailySpent());
+        }
+        System.out.println("------------------------");
+    }
+
+    System.out.print("Enter card number to use: ");
+    String cardNumber = scanner.nextLine();
+
+    Card selectedCard = null;
+    for (Card card : loggedInUser.getCards()) {
+        if (card.getCardNumber().equals(cardNumber)) {
+            selectedCard = card;
+            break;
+        }
+    }
+
+    if (selectedCard == null) {
+        System.out.println("Card not found.");
+        return;
+    }
+
+    if (!selectedCard.isActive()) {
+        System.out.println("This card is inactive.");
+        return;
+    }
+
+    if (!(selectedCard instanceof DebitCard)) {
+        System.out.println("This operation is only supported for debit cards.");
+        return;
+    }
+
+    DebitCard debitCard = (DebitCard) selectedCard;
+
+    System.out.print("Enter payment amount: ");
+    BigDecimal amount = null;
+    while (amount == null) {
+        if (scanner.hasNextBigDecimal()) {
+            amount = scanner.nextBigDecimal();
+            scanner.nextLine(); // Consume newline
+            if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+                System.out.println("Amount must be positive.");
+                amount = null;
+            } else if (debitCard.getDailySpent().add(amount).compareTo(debitCard.getDailyLimit()) > 0) {
+                System.out.println("Payment exceeds the daily spending limit.");
+                return;
+            }
+        } else {
+            System.out.println("Invalid input. Please enter a valid number.");
+            scanner.next();
+        }
+    }
+
+    // Process the payment
+    Account linkedAccount = debitCard.getLinkedAccount();
+    if (amount.compareTo(linkedAccount.getBalance()) > 0) {
+        System.out.println("Insufficient funds.");
+        return;
+    }
+
+    // Create a transfer record with empty target account
+    Transfer payment = new Transfer(linkedAccount.getAccountName(), "CARD_PAYMENT", amount);
+    payment.setStatus("COMPLETED");
+    transfers.add(payment);
+
+    // Update account balance and daily spent
+    linkedAccount.setBalance(linkedAccount.getBalance().subtract(amount));
+    debitCard.resetDailySpent(); // Reset daily spent if needed (e.g., at midnight)
+    debitCard.getDailySpent().add(amount);
+
+    saveAccounts();
+    saveTransfers();
+    System.out.println("Payment completed successfully!");
+}
 
     private static void performDeposit() {
         if (loggedInUser.getAccounts().isEmpty()) {
