@@ -903,7 +903,11 @@ private static void makeCardPayment() {
                 System.out.println("Amount must be positive.");
                 amount = null;
             } else if (debitCard.getDailySpent().add(amount).compareTo(debitCard.getDailyLimit()) > 0) {
-                System.out.println("Payment exceeds the daily spending limit.");
+                System.out.println("Payment exceeds the daily spending limit. Payment marked as incomplete.");
+                Transfer payment = new Transfer(debitCard.getLinkedAccount().getAccountName(), "CARD_PAYMENT", amount);
+                payment.setStatus("INCOMPLETE");
+                transfers.add(payment);
+                saveTransfers();
                 return;
             }
         } else {
@@ -915,7 +919,11 @@ private static void makeCardPayment() {
     // Process the payment
     Account linkedAccount = debitCard.getLinkedAccount();
     if (amount.compareTo(linkedAccount.getBalance()) > 0) {
-        System.out.println("Insufficient funds.");
+        System.out.println("Insufficient funds. Payment marked as incomplete.");
+        Transfer payment = new Transfer(linkedAccount.getAccountName(), "CARD_PAYMENT", amount);
+        payment.setStatus("INCOMPLETE");
+        transfers.add(payment);
+        saveTransfers();
         return;
     }
 
